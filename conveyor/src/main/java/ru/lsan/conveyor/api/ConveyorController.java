@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.lsan.conveyor.dto.CreditDTO;
 import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
 import ru.lsan.conveyor.dto.ScoringDataDTO;
-import ru.lsan.conveyor.exception.IncorrectRequestParametersException;
-import ru.lsan.conveyor.exception.LoanDenialException;
+import ru.lsan.conveyor.exception.custom_exceptions.IncorrectRequestParametersException;
+import ru.lsan.conveyor.exception.custom_exceptions.LoanDenialException;
 import ru.lsan.conveyor.service.PrescoringService;
 import ru.lsan.conveyor.service.ScoringService;
 import ru.lsan.conveyor.tools.ClassFieldsValidator;
@@ -20,7 +20,7 @@ import ru.lsan.conveyor.tools.ClassFieldsValidator;
 @RestController
 @RequestMapping("/conveyor")
 @Log4j2
-@Api(value = "бла бла бла")
+@Api(value = "Микросервис: кредитный конвеер")
 public class ConveyorController {
 
     @Autowired
@@ -32,13 +32,8 @@ public class ConveyorController {
     @PostMapping("/offers")
     @ApiOperation(value = "валидация присланных данных + расчёт возможных условий кредита")
     public ResponseEntity offers(@RequestBody LoanApplicationRequestDTO dto) {
-        try {
-            ClassFieldsValidator.validateClassFields(dto);
-            log.info("/conveyor/offers: accepted dto");
-        } catch (IncorrectRequestParametersException e) {
-            log.error("/conveyor/offers: " + e.getMessage());
-            return ResponseEntity.of(Optional.of(e.getMessage()));
-        }
+        ClassFieldsValidator.validateClassFields(dto);
+        log.info("/conveyor/offers: accepted dto");
         return ResponseEntity.of(Optional.of(prescoringService.prescoreLoan(dto)));
     }
 
@@ -46,14 +41,9 @@ public class ConveyorController {
     @ApiOperation(value = "скоринг данных + полный расчет параметров кредита")
     public ResponseEntity calculation(@RequestBody ScoringDataDTO dto) {
         CreditDTO creditDTO;
-        try {
-            ClassFieldsValidator.validateClassFields(dto);
-            creditDTO = scoringService.scoreLoan(dto);
-            log.info("/conveyor/calculation: accepted dto");
-        } catch (IncorrectRequestParametersException | LoanDenialException e) {
-            log.error("/conveyor/calculation: " + e.getMessage());
-            return ResponseEntity.of(Optional.of(e.getMessage()));
-        }
+        ClassFieldsValidator.validateClassFields(dto);
+        creditDTO = scoringService.scoreLoan(dto);
+        log.info("/conveyor/calculation: accepted dto");
         return ResponseEntity.of(Optional.of(creditDTO));
     }
 

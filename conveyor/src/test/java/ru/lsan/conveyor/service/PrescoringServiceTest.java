@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
 import ru.lsan.conveyor.dto.LoanOfferDTO;
-import ru.lsan.conveyor.exception.IncorrectRequestParametersException;
+import ru.lsan.conveyor.exception.custom_exceptions.IncorrectRequestParametersException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

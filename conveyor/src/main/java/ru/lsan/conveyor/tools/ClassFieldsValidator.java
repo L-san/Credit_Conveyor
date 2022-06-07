@@ -3,7 +3,7 @@ package ru.lsan.conveyor.tools;
 import lombok.extern.log4j.Log4j2;
 import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
 import ru.lsan.conveyor.dto.ScoringDataDTO;
-import ru.lsan.conveyor.exception.IncorrectRequestParametersException;
+import ru.lsan.conveyor.exception.custom_exceptions.IncorrectRequestParametersException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

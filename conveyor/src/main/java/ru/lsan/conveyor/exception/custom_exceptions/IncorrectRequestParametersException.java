@@ -1,6 +1,6 @@
-package ru.lsan.conveyor.exception;
+package ru.lsan.conveyor.exception.custom_exceptions;
 
-public class IncorrectRequestParametersException extends Exception {
+public class IncorrectRequestParametersException extends RuntimeException {
 
     public IncorrectRequestParametersException() {
         super();

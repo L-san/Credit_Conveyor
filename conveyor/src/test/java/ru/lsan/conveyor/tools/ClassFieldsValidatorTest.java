@@ -3,7 +3,7 @@ package ru.lsan.conveyor.tools;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
-import ru.lsan.conveyor.exception.IncorrectRequestParametersException;
+import ru.lsan.conveyor.exception.custom_exceptions.IncorrectRequestParametersException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

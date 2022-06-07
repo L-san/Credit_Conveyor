@@ -1,6 +1,6 @@
-package ru.lsan.conveyor.exception;
+package ru.lsan.conveyor.exception.custom_exceptions;
 
-public class LoanDenialException extends Exception {
+public class LoanDenialException extends RuntimeException {
 
     public LoanDenialException() {
         super();

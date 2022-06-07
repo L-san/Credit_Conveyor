@@ -9,7 +9,7 @@ import ru.lsan.conveyor.dto.enums.EmploymentStatusEnum;
 import ru.lsan.conveyor.dto.enums.GenderEnum;
 import ru.lsan.conveyor.dto.enums.MaritalStatusEnum;
 import ru.lsan.conveyor.dto.enums.PositionEnum;
-import ru.lsan.conveyor.exception.LoanDenialException;
+import ru.lsan.conveyor.exception.custom_exceptions.LoanDenialException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
