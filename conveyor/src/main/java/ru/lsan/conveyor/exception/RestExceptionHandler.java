@@ -33,5 +33,5 @@ public class RestExceptionHandler {
         log.error(httpMessageNotReadableException.getMessage());
         return httpMessageNotReadableException.getMessage();
     }
-    
+
 }

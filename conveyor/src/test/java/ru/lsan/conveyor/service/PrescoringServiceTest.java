@@ -21,7 +21,7 @@ class PrescoringServiceTest {
 
     @Test
     void prescoreLoan() throws IncorrectRequestParametersException {
-        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
+        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
         dto.setAmount(BigDecimal.valueOf(100000));
         dto.setTerm(12);
         dto.setFirstName("Petr");

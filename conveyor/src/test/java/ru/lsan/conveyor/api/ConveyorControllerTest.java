@@ -30,68 +30,83 @@ class ConveyorControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void offers() throws Exception {
-        LoanApplicationRequestDTO loanApplicationRequestDTO = new LoanApplicationRequestDTO(
-                BigDecimal.valueOf(100000),
-                12,
-                "Ivan",
-                "Ivanovich",
-                "Ivanov",
-                "me@gmail.com",
-                LocalDate.of(1986, 1, 1),
-                "1234",
-                "123456"
-        );
+    void offers(){
+        LoanApplicationRequestDTO loanApplicationRequestDTO =
+                LoanApplicationRequestDTO.builder()
+                        .amount(BigDecimal.valueOf(100000))
+                        .term(12)
+                        .firstName("Ivan")
+                        .lastName("Ivanov")
+                        .middleName("Ivanovich")
+                        .email("me@gmail.com")
+                        .birthdate(LocalDate.of(1986, 1, 1))
+                        .passportSeries("1234")
+                        .passportNumber("123456")
+                        .build();
 
         String expectedResponse1 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":200000,\"term\":12,\"monthlyPayment\":null,\"rate\":7,\"isInsuranceEnabled\":true,\"isSalaryClient\":true}";
         String expectedResponse2 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":200000,\"term\":12,\"monthlyPayment\":null,\"rate\":8,\"isInsuranceEnabled\":false,\"isSalaryClient\":false}";
         String expectedResponse3 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":200000,\"term\":12,\"monthlyPayment\":null,\"rate\":9,\"isInsuranceEnabled\":true,\"isSalaryClient\":false}";
         String expectedResponse4 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":100000,\"term\":12,\"monthlyPayment\":null,\"rate\":13,\"isInsuranceEnabled\":false,\"isSalaryClient\":true}";
 
-        String response = mockMvc.perform(
-                        MockMvcRequestBuilders.post("/conveyor/offers")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(loanApplicationRequestDTO)))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        String response;
 
-        assertTrue(response.contains(expectedResponse1));
-        assertTrue(response.contains(expectedResponse2));
-        assertTrue(response.contains(expectedResponse3));
-        assertTrue(response.contains(expectedResponse4));
-
+        try {
+            response = mockMvc.perform(
+                            MockMvcRequestBuilders.post("/conveyor/offers")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(asJsonString(loanApplicationRequestDTO)))
+                    .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+            assertTrue(response.contains(expectedResponse1));
+            assertTrue(response.contains(expectedResponse2));
+            assertTrue(response.contains(expectedResponse3));
+            assertTrue(response.contains(expectedResponse4));
+        } catch (Exception e) {
+            assertEquals(Exception.class, e.getClass());
+        }
     }
 
     @Test
-    void calculation() throws Exception {
-        ScoringDataDTO dto = new ScoringDataDTO(
-                BigDecimal.valueOf(100000),
-                12,
-                "Ivan",
-                "Ivanov",
-                "Ivanovich",
-                GenderEnum.MALE,
-                LocalDate.of(1986, 1, 1),
-                "1234",
-                "123456",
-                LocalDate.of(1986, 1, 1),
-                "branch",
-                MaritalStatusEnum.SINGLE,
-                0,
-                new EmploymentDTO(EmploymentStatusEnum.EMPLOYED, "132414", BigDecimal.valueOf(200000), PositionEnum.CEO, 12, 12),
-                "acc",
-                false,
-                true
-        );
+    void calculation() {
 
-        String response = mockMvc.perform(
-                        MockMvcRequestBuilders.post("/conveyor/calculation")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(dto)))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
-        System.out.println(response);
-
+        ScoringDataDTO dto = ScoringDataDTO.builder()
+                .amount(BigDecimal.valueOf(100000))
+                .term(12)
+                .firstName("Ivan")
+                .lastName("Ivanovich")
+                .middleName("Ivanov")
+                .gender(GenderEnum.MALE)
+                .birthdate(LocalDate.of(1986, 1, 1))
+                .passportSeries("1234")
+                .passportNumber("123456")
+                .passportIssueDate(LocalDate.of(1986, 1, 1))
+                .passportIssueBranch("branch")
+                .maritalStatus(MaritalStatusEnum.SINGLE)
+                .dependentAmount(0)
+                .employment(EmploymentDTO.builder()
+                                .employmentStatusEnum(EmploymentStatusEnum.EMPLOYED)
+                                .employerINN("132414")
+                                .position(PositionEnum.CEO)
+                                .salary(BigDecimal.valueOf(200000))
+                                .workExperienceCurrent(12)
+                                .workExperienceTotal(12)
+                                .build())
+                .account("acc")
+                .isInsuranceEnabled(false)
+                .isSalaryClient(true)
+                .build();
         String compare = "{\"amount\":100000,\"term\":12,\"monthlyPayment\":8652.6746054690,\"rate\":7,\"psk\":103832.0952656280,\"isInsuranceEnabled\":false,\"isSalaryClient\":true";
-        assertTrue(response.contains(compare));
+        String response;
+        try {
+            response = mockMvc.perform(
+                            MockMvcRequestBuilders.post("/conveyor/calculation")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(asJsonString(dto)))
+                    .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+            assertTrue(response.contains(compare));
+        } catch (Exception e) {
+            assertEquals(Exception.class, e.getClass());
+        }
     }
 
     public static <T> String asJsonString(T t) {

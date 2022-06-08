@@ -12,12 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class PaymentScheduleElementTest {
 
     private PaymentScheduleElement getElement() {
-        return new PaymentScheduleElement(1,
-                LocalDate.of(2000, 1, 1),
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO);
+        return PaymentScheduleElement.builder()
+                .number(1)
+                .date(LocalDate.of(2000, 1, 1))
+                .totalPayment(BigDecimal.ZERO)
+                .interestPayment(BigDecimal.ZERO)
+                .debtPayment(BigDecimal.ZERO)
+                .remainingDebt(BigDecimal.ZERO).build();
     }
 
     @Test

@@ -11,14 +11,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class LoanOfferDTOTest {
 
     private LoanOfferDTO getDto() {
-        return new LoanOfferDTO(123L,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                0,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                Boolean.FALSE,
-                Boolean.FALSE);
+        return LoanOfferDTO.builder()
+                .applicationId(123L)
+                .requestedAmount(BigDecimal.ZERO)
+                .totalAmount(BigDecimal.ZERO)
+                .term(0)
+                .monthlyPayment(BigDecimal.ZERO)
+                .rate(BigDecimal.ZERO)
+                .isInsuranceEnabled(Boolean.FALSE)
+                .isSalaryClient(Boolean.FALSE).
+                build();
     }
 
     @Test

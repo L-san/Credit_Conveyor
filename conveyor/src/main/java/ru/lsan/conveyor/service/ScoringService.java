@@ -28,12 +28,20 @@ public class ScoringService {
     public CreditDTO scoreLoan(ScoringDataDTO dto) throws LoanDenialException {
         if (isLoanShouldBeDenied(dto)) throw new LoanDenialException("Loan is denied");
         BigDecimal rate = calculateRate(dto);
-        CreditDTO creditDTO = new CreditDTO(dto.getAmount(), dto.getTerm(), rate, dto.getIsInsuranceEnabled(), dto.getIsSalaryClient());
+
+        CreditDTO creditDTO = CreditDTO.builder()
+                .amount(dto.getAmount())
+                .term(dto.getTerm())
+                .rate(rate)
+                .isInsuranceEnabled(dto.getIsInsuranceEnabled())
+                .isSalaryClient(dto.getIsSalaryClient())
+                .build();
         calculateCredit(creditDTO);
+
         return creditDTO;
     }
 
-    public boolean isLoanShouldBeDenied(ScoringDataDTO dto) {
+    private boolean isLoanShouldBeDenied(ScoringDataDTO dto) {
         BigDecimal twentySalaries = dto.getEmployment().getSalary().multiply(BigDecimal.valueOf(20));
 
         LocalDate currentDate = LocalDate.now();
@@ -55,7 +63,7 @@ public class ScoringService {
         }
     }
 
-    public BigDecimal calculateRate(ScoringDataDTO dto) {
+    private BigDecimal calculateRate(ScoringDataDTO dto) {
         BigDecimal rate = baseLoanRate;
 
         LocalDate currentDate = LocalDate.now();
@@ -84,7 +92,7 @@ public class ScoringService {
     }
 
     //аннуитетные платежи
-    public void calculateCredit(CreditDTO creditDTO) {
+    private void calculateCredit(CreditDTO creditDTO) {
         BigDecimal monthlyRate = creditDTO.getRate().divide(BigDecimal.valueOf(1200), scale, RoundingMode.HALF_UP);
         BigDecimal amount = creditDTO.getAmount();
         BigDecimal monthlyPayment;
@@ -104,7 +112,7 @@ public class ScoringService {
         LocalDate currentDate = LocalDate.now();
 
         for (int i = 0; i < period; i++) {
-            PaymentScheduleElement e = new PaymentScheduleElement();
+            PaymentScheduleElement e = PaymentScheduleElement.builder().build();
             BigDecimal percentCreditPayment = psk.multiply(monthlyRate);
             BigDecimal bodyCreditPayment = monthlyPayment.subtract(percentCreditPayment);
 

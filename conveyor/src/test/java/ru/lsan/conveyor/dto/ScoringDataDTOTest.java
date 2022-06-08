@@ -27,7 +27,7 @@ class ScoringDataDTOTest {
                 "a",
                 MaritalStatusEnum.SINGLE,
                 0,
-                new EmploymentDTO(),
+                EmploymentDTO.builder().build(),
                 "a",
                 Boolean.FALSE,
                 Boolean.FALSE);
@@ -229,7 +229,7 @@ class ScoringDataDTOTest {
     @Test
     void setEmployment() {
         ScoringDataDTO dto = getDto();
-        dto.setEmployment(new EmploymentDTO());
+        dto.setEmployment(EmploymentDTO.builder().build());
         assertNotNull(dto.getEmployment());
     }
 

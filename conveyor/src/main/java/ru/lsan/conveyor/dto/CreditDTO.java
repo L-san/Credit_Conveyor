@@ -3,13 +3,11 @@ package ru.lsan.conveyor.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
 public class CreditDTO {
 
     private BigDecimal amount;
@@ -27,13 +25,5 @@ public class CreditDTO {
     private Boolean isSalaryClient;
 
     private List<PaymentScheduleElement> paymentScheduleElementList;
-
-    public CreditDTO(BigDecimal amount, Integer term, BigDecimal rate, Boolean isInsuranceEnabled, Boolean isSalaryClient) {
-        this.amount = amount;
-        this.term = term;
-        this.rate = rate;
-        this.isInsuranceEnabled = isInsuranceEnabled;
-        this.isSalaryClient = isSalaryClient;
-    }
 
 }
