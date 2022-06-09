@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrescoringService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">conveyor</a> &gt; <a href="index.source.html" class="el_package">ru.lsan.conveyor.service</a> &gt; <span class="el_source">PrescoringService.java</span></div><h1>PrescoringService.java</h1><pre class="source lang-java linenums">package ru.lsan.conveyor.service;
+
+import java.math.BigDecimal;
+import java.util.*;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
+import ru.lsan.conveyor.dto.LoanOfferDTO;
+
+@Service
+<span class="fc" id="L12">public class PrescoringService {</span>
+
+    @Value(&quot;${baseLoanRate}&quot;)
+    private BigDecimal baseLoanRate;
+
+    @Value(&quot;${baseInsuranceCost}&quot;)
+    private BigDecimal baseInsuranceCost;
+
+    public List&lt;LoanOfferDTO&gt; prescoreLoan(LoanApplicationRequestDTO dto) {
+<span class="fc" id="L21">        List&lt;LoanOfferDTO&gt; loanOfferDTOList = new ArrayList&lt;&gt;(4);</span>
+
+<span class="fc" id="L23">        LoanOfferDTO insuranceEnabledSalaryClientDto = new LoanOfferDTO(dto, true, true);</span>
+<span class="fc" id="L24">        insuranceEnabledSalaryClientDto.setRate(baseLoanRate.subtract(BigDecimal.valueOf(3)));</span>
+<span class="fc" id="L25">        insuranceEnabledSalaryClientDto.setTotalAmount(dto.getAmount().add(baseInsuranceCost));</span>
+<span class="fc" id="L26">        loanOfferDTOList.add(insuranceEnabledSalaryClientDto);</span>
+
+<span class="fc" id="L28">        LoanOfferDTO insuranceEnabledNotSalaryClientDto = new LoanOfferDTO(dto, true, false);</span>
+<span class="fc" id="L29">        insuranceEnabledNotSalaryClientDto.setRate(baseLoanRate.subtract(BigDecimal.valueOf(1)));</span>
+<span class="fc" id="L30">        insuranceEnabledNotSalaryClientDto.setTotalAmount(dto.getAmount().add(baseInsuranceCost));</span>
+<span class="fc" id="L31">        loanOfferDTOList.add(insuranceEnabledNotSalaryClientDto);</span>
+
+<span class="fc" id="L33">        LoanOfferDTO notInsuranceEnabledSalaryClientDto = new LoanOfferDTO(dto, false, true);</span>
+<span class="fc" id="L34">        notInsuranceEnabledSalaryClientDto.setRate(baseLoanRate.add(BigDecimal.valueOf(3)));</span>
+<span class="fc" id="L35">        notInsuranceEnabledSalaryClientDto.setTotalAmount(dto.getAmount());</span>
+<span class="fc" id="L36">        loanOfferDTOList.add(notInsuranceEnabledSalaryClientDto);</span>
+
+<span class="fc" id="L38">        LoanOfferDTO notInsuranceEnabledNotSalaryClientDto = new LoanOfferDTO(dto, false, false);</span>
+<span class="fc" id="L39">        notInsuranceEnabledNotSalaryClientDto.setRate(baseLoanRate.subtract(BigDecimal.valueOf(2)));</span>
+<span class="fc" id="L40">        notInsuranceEnabledNotSalaryClientDto.setTotalAmount(dto.getAmount().add(baseInsuranceCost));</span>
+<span class="fc" id="L41">        loanOfferDTOList.add(notInsuranceEnabledNotSalaryClientDto);</span>
+
+<span class="fc" id="L43">        loanOfferDTOList.sort(Comparator.comparing(LoanOfferDTO::getRate));</span>
+
+<span class="fc" id="L45">        return loanOfferDTOList;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

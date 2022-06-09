@@ -26,9 +26,27 @@ public class ScoringService {
     private final int scale = 10;
 
     public CreditDTO scoreLoan(ScoringDataDTO dto) throws LoanDenialException {
-        if (isLoanShouldBeDenied(dto)) throw new LoanDenialException("Loan is denied");
-        BigDecimal rate = calculateRate(dto);
+        if (ScoringConditions.isLoanShouldBeDenied(dto)) throw new LoanDenialException("Loan is denied");
+        return calculateCredit(dto);
+    }
 
+    private BigDecimal calculateRate(ScoringDataDTO dto) {
+        BigDecimal rate = baseLoanRate;
+        if (ScoringConditions.isSelfEmployed(dto))      rate = rate.add(BigDecimal.valueOf(1));
+        if (ScoringConditions.isBusinessMan(dto))       rate = rate.subtract(BigDecimal.valueOf(2));
+        if (ScoringConditions.isTopManager(dto))        rate = rate.subtract(BigDecimal.valueOf(4));
+        if (ScoringConditions.isMarried(dto))           rate = rate.subtract(BigDecimal.valueOf(3));
+        if (ScoringConditions.isDivorced(dto))          rate = rate.add(BigDecimal.valueOf(1));
+        if (ScoringConditions.isFemaleFrom35to60(dto))  rate = rate.subtract(BigDecimal.valueOf(3));
+        if (ScoringConditions.isMaleFrom30to55(dto))    rate = rate.subtract(BigDecimal.valueOf(3));
+        if (ScoringConditions.isGenderNonBinary(dto))   rate = rate.add(BigDecimal.valueOf(3));
+
+        return rate;
+    }
+
+    //аннуитетные платежи
+    private CreditDTO calculateCredit(ScoringDataDTO dto) {
+        BigDecimal rate = calculateRate(dto);
         CreditDTO creditDTO = CreditDTO.builder()
                 .amount(dto.getAmount())
                 .term(dto.getTerm())
@@ -36,63 +54,7 @@ public class ScoringService {
                 .isInsuranceEnabled(dto.getIsInsuranceEnabled())
                 .isSalaryClient(dto.getIsSalaryClient())
                 .build();
-        calculateCredit(creditDTO);
 
-        return creditDTO;
-    }
-
-    private boolean isLoanShouldBeDenied(ScoringDataDTO dto) {
-        BigDecimal twentySalaries = dto.getEmployment().getSalary().multiply(BigDecimal.valueOf(20));
-
-        LocalDate currentDate = LocalDate.now();
-        LocalDate userBirthdate = dto.getBirthdate();
-        LocalDate currentUserAge = currentDate.minusYears(userBirthdate.getYear()).minusDays(userBirthdate.getDayOfYear());
-
-        if (dto.getEmployment().getEmploymentStatusEnum().equals(EmploymentStatusEnum.UNEMPLOYED)) {
-            return true;
-        } else if (dto.getAmount().compareTo(twentySalaries) > 0) {
-            return true;
-        } else if (currentUserAge.getYear() < 20 || currentUserAge.getYear() > 60) {
-            return true;
-        } else if (dto.getEmployment().getWorkExperienceTotal() < 12) {
-            return true;
-        } else if (dto.getEmployment().getWorkExperienceCurrent() < 3) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private BigDecimal calculateRate(ScoringDataDTO dto) {
-        BigDecimal rate = baseLoanRate;
-
-        LocalDate currentDate = LocalDate.now();
-        LocalDate userBirthdate = dto.getBirthdate();
-        LocalDate currentUserAge = currentDate.minusYears(userBirthdate.getYear()).minusDays(userBirthdate.getDayOfYear());
-
-        if (dto.getEmployment().getEmploymentStatusEnum().equals(EmploymentStatusEnum.SELF_EMPLOYED)) {
-            rate = rate.add(BigDecimal.valueOf(1));
-        } else if (dto.getEmployment().getEmploymentStatusEnum().equals(EmploymentStatusEnum.BUSINESSMAN)) {
-            rate = rate.subtract(BigDecimal.valueOf(2));
-        } else if (dto.getEmployment().getPosition().equals(PositionEnum.TOP_MANAGER)) {
-            rate = rate.subtract(BigDecimal.valueOf(4));
-        } else if (dto.getMaritalStatus().equals(MaritalStatusEnum.MARRIED)) {
-            rate = rate.subtract(BigDecimal.valueOf(3));
-        } else if (dto.getMaritalStatus().equals(MaritalStatusEnum.DIVORCED)) {
-            rate = rate.add(BigDecimal.valueOf(1));
-        } else if (dto.getGender().equals(GenderEnum.FEMALE) && (currentUserAge.getYear() >= 35 && currentUserAge.getYear() <= 60)) {
-            rate = rate.subtract(BigDecimal.valueOf(3));
-        } else if (dto.getGender().equals(GenderEnum.MALE) && (currentUserAge.getYear() >= 30 && currentUserAge.getYear() <= 55)) {
-            rate = rate.subtract(BigDecimal.valueOf(3));
-        } else if (dto.getGender().equals(GenderEnum.NON_BINARY)) {
-            rate = rate.add(BigDecimal.valueOf(3));
-        }
-
-        return rate;
-    }
-
-    //аннуитетные платежи
-    private void calculateCredit(CreditDTO creditDTO) {
         BigDecimal monthlyRate = creditDTO.getRate().divide(BigDecimal.valueOf(1200), scale, RoundingMode.HALF_UP);
         BigDecimal amount = creditDTO.getAmount();
         BigDecimal monthlyPayment;
@@ -130,6 +92,7 @@ public class ScoringService {
         }
 
         creditDTO.setPaymentScheduleElementList(paymentScheduleElementList);
+        return creditDTO;
     }
 
 }

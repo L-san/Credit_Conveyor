@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConveyorController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">conveyor</a> &gt; <a href="index.source.html" class="el_package">ru.lsan.conveyor.api</a> &gt; <span class="el_source">ConveyorController.java</span></div><h1>ConveyorController.java</h1><pre class="source lang-java linenums">package ru.lsan.conveyor.api;
+
+import java.util.Optional;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import ru.lsan.conveyor.dto.CreditDTO;
+import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
+import ru.lsan.conveyor.dto.ScoringDataDTO;
+import ru.lsan.conveyor.exception.custom_exceptions.IncorrectRequestParametersException;
+import ru.lsan.conveyor.exception.custom_exceptions.LoanDenialException;
+import ru.lsan.conveyor.service.PrescoringService;
+import ru.lsan.conveyor.service.ScoringService;
+import ru.lsan.conveyor.tools.ClassFieldsValidator;
+
+@RestController
+@RequestMapping(&quot;/conveyor&quot;)
+<span class="fc" id="L22">@Log4j2</span>
+@Api(value = &quot;Микросервис: кредитный конвеер&quot;)
+<span class="fc" id="L24">public class ConveyorController {</span>
+
+    @Autowired
+    private PrescoringService prescoringService;
+
+    @Autowired
+    private ScoringService scoringService;
+
+    @PostMapping(&quot;/offers&quot;)
+    @ApiOperation(value = &quot;валидация присланных данных + расчёт возможных условий кредита&quot;)
+    public ResponseEntity offers(@RequestBody LoanApplicationRequestDTO dto) {
+<span class="fc" id="L35">        ClassFieldsValidator.validateClassFields(dto);</span>
+<span class="fc" id="L36">        log.info(&quot;/conveyor/offers: accepted dto&quot;);</span>
+<span class="fc" id="L37">        return ResponseEntity.of(Optional.of(prescoringService.prescoreLoan(dto)));</span>
+    }
+
+    @PostMapping(&quot;/calculation&quot;)
+    @ApiOperation(value = &quot;скоринг данных + полный расчет параметров кредита&quot;)
+    public ResponseEntity calculation(@RequestBody ScoringDataDTO dto) {
+        CreditDTO creditDTO;
+<span class="fc" id="L44">        ClassFieldsValidator.validateClassFields(dto);</span>
+<span class="fc" id="L45">        creditDTO = scoringService.scoreLoan(dto);</span>
+<span class="fc" id="L46">        log.info(&quot;/conveyor/calculation: accepted dto&quot;);</span>
+<span class="fc" id="L47">        return ResponseEntity.of(Optional.of(creditDTO));</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

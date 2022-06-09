@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScoringConditions.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">conveyor</a> &gt; <a href="index.source.html" class="el_package">ru.lsan.conveyor.service</a> &gt; <span class="el_source">ScoringConditions.java</span></div><h1>ScoringConditions.java</h1><pre class="source lang-java linenums">package ru.lsan.conveyor.service;
+
+import ru.lsan.conveyor.dto.ScoringDataDTO;
+import ru.lsan.conveyor.dto.enums.EmploymentStatusEnum;
+import ru.lsan.conveyor.dto.enums.GenderEnum;
+import ru.lsan.conveyor.dto.enums.MaritalStatusEnum;
+import ru.lsan.conveyor.dto.enums.PositionEnum;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+<span class="nc" id="L12">class ScoringConditions {</span>
+
+    public static boolean isLoanShouldBeDenied(ScoringDataDTO dto) {
+<span class="fc bfc" id="L15" title="All 8 branches covered.">        return isUnemployed(dto) || isAmountLargerThan20Salaries(dto) || isUserAgeInBounds(dto) || isWorkExperienceValid(dto);</span>
+    }
+
+    public static boolean isSelfEmployed(ScoringDataDTO dto) {
+<span class="fc" id="L19">        return dto.getEmployment().getEmploymentStatusEnum().equals(EmploymentStatusEnum.SELF_EMPLOYED);</span>
+    }
+
+    public static boolean isBusinessMan(ScoringDataDTO dto) {
+<span class="fc" id="L23">        return dto.getEmployment().getEmploymentStatusEnum().equals(EmploymentStatusEnum.BUSINESSMAN);</span>
+    }
+
+    public static boolean isTopManager(ScoringDataDTO dto) {
+<span class="fc" id="L27">        return dto.getEmployment().getPosition().equals(PositionEnum.TOP_MANAGER);</span>
+    }
+
+    public static boolean isMarried(ScoringDataDTO dto) {
+<span class="fc" id="L31">        return dto.getMaritalStatus().equals(MaritalStatusEnum.MARRIED);</span>
+    }
+
+    public static boolean isDivorced(ScoringDataDTO dto) {
+<span class="fc" id="L35">        return dto.getMaritalStatus().equals(MaritalStatusEnum.DIVORCED);</span>
+    }
+
+    public static boolean isFemaleFrom35to60(ScoringDataDTO dto) {
+<span class="fc" id="L39">        LocalDate currentDate = LocalDate.now();</span>
+<span class="fc" id="L40">        LocalDate userBirthdate = dto.getBirthdate();</span>
+<span class="fc" id="L41">        LocalDate currentUserAge = currentDate.minusYears(userBirthdate.getYear()).minusDays(userBirthdate.getDayOfYear());</span>
+<span class="pc bpc" id="L42" title="5 of 6 branches missed.">        return dto.getGender().equals(GenderEnum.FEMALE) &amp;&amp; (currentUserAge.getYear() &gt;= 35 &amp;&amp; currentUserAge.getYear() &lt;= 60);</span>
+    }
+
+    public static boolean isMaleFrom30to55(ScoringDataDTO dto) {
+<span class="fc" id="L46">        LocalDate currentDate = LocalDate.now();</span>
+<span class="fc" id="L47">        LocalDate userBirthdate = dto.getBirthdate();</span>
+<span class="fc" id="L48">        LocalDate currentUserAge = currentDate.minusYears(userBirthdate.getYear()).minusDays(userBirthdate.getDayOfYear());</span>
+<span class="pc bpc" id="L49" title="3 of 6 branches missed.">        return dto.getGender().equals(GenderEnum.MALE) &amp;&amp; (currentUserAge.getYear() &gt;= 30 &amp;&amp; currentUserAge.getYear() &lt;= 55);</span>
+    }
+
+    public static boolean isGenderNonBinary(ScoringDataDTO dto) {
+<span class="fc" id="L53">        return dto.getGender().equals(GenderEnum.NON_BINARY);</span>
+    }
+
+    private static boolean isUnemployed(ScoringDataDTO dto) {
+<span class="fc" id="L57">        return dto.getEmployment().getEmploymentStatusEnum().equals(EmploymentStatusEnum.UNEMPLOYED);</span>
+    }
+
+    private static boolean isAmountLargerThan20Salaries(ScoringDataDTO dto) {
+<span class="fc" id="L61">        BigDecimal twentySalaries = dto.getEmployment().getSalary().multiply(BigDecimal.valueOf(20));</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        return dto.getAmount().compareTo(twentySalaries) &gt; 0;</span>
+    }
+
+    private static boolean isUserAgeInBounds(ScoringDataDTO dto) {
+<span class="fc" id="L66">        LocalDate currentDate = LocalDate.now();</span>
+<span class="fc" id="L67">        LocalDate userBirthdate = dto.getBirthdate();</span>
+<span class="fc" id="L68">        LocalDate currentUserAge = currentDate.minusYears(userBirthdate.getYear()).minusDays(userBirthdate.getDayOfYear());</span>
+<span class="pc bpc" id="L69" title="1 of 4 branches missed.">        return currentUserAge.getYear() &lt; 20 || currentUserAge.getYear() &gt; 60;</span>
+    }
+
+    private static boolean isWorkExperienceValid(ScoringDataDTO dto) {
+<span class="pc bpc" id="L73" title="1 of 4 branches missed.">        return dto.getEmployment().getWorkExperienceCurrent() &lt; 3 || dto.getEmployment().getWorkExperienceTotal() &lt; 12;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

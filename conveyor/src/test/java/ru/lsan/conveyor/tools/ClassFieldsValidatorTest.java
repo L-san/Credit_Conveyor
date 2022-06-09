@@ -15,7 +15,7 @@ class ClassFieldsValidatorTest {
 
     @Test
     void validateAmount() {
-        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
+        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
         assertThrows(IncorrectRequestParametersException.class, () -> {
             dto.setAmount(BigDecimal.valueOf(9999));
             ClassFieldsValidator.validateAmount(dto.getAmount());
@@ -28,7 +28,7 @@ class ClassFieldsValidatorTest {
 
     @Test
     void validateTerm() {
-        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
+        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
         assertThrows(IncorrectRequestParametersException.class, () -> {
             dto.setTerm(3);
             ClassFieldsValidator.validateTerm(dto.getTerm());
@@ -37,7 +37,7 @@ class ClassFieldsValidatorTest {
 
     @Test
     void validateFirstName() {
-        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
+        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
         assertThrows(IncorrectRequestParametersException.class, () -> {
             dto.setFirstName("a");
             ClassFieldsValidator.validateFirstName(dto.getFirstName());
@@ -54,7 +54,7 @@ class ClassFieldsValidatorTest {
 
     @Test
     void validateLastName() {
-        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
+        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
         assertThrows(IncorrectRequestParametersException.class, () -> {
             dto.setLastName("a");
             ClassFieldsValidator.validateLastName(dto.getLastName());
@@ -71,7 +71,7 @@ class ClassFieldsValidatorTest {
 
     @Test
     void validateMiddleName() {
-        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
+        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
         assertThrows(IncorrectRequestParametersException.class, () -> {
             dto.setMiddleName("a");
             ClassFieldsValidator.validateMiddleName(dto.getMiddleName());
@@ -88,7 +88,7 @@ class ClassFieldsValidatorTest {
 
     @Test
     void validateEmail() {
-        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
+        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
         assertThrows(IncorrectRequestParametersException.class, () -> {
             dto.setEmail("abracadabra@");
             ClassFieldsValidator.validateEmail(dto.getEmail());
@@ -105,7 +105,7 @@ class ClassFieldsValidatorTest {
 
     @Test
     void validateBirthdate() {
-        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
+        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
         assertThrows(IncorrectRequestParametersException.class, () -> {
             dto.setBirthdate(LocalDate.now().plusYears(10));
             ClassFieldsValidator.validateBirthdate(dto.getBirthdate());
@@ -118,7 +118,7 @@ class ClassFieldsValidatorTest {
 
     @Test
     void validatePassportSeries() {
-        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
+        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
         assertThrows(IncorrectRequestParametersException.class, () -> {
             dto.setPassportSeries("12455");
             ClassFieldsValidator.validatePassportSeries(dto.getPassportSeries());
@@ -131,7 +131,7 @@ class ClassFieldsValidatorTest {
 
     @Test
     void validatePassportNumber() {
-        LoanApplicationRequestDTO dto = LoanApplicationRequestDTO.builder().build();
+        LoanApplicationRequestDTO dto = new LoanApplicationRequestDTO();
         assertThrows(IncorrectRequestParametersException.class, () -> {
             dto.setPassportSeries("12455555");
             ClassFieldsValidator.validatePassportSeries(dto.getPassportSeries());
