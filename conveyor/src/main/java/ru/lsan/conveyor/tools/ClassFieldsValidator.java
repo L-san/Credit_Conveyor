@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Log4j2
 public class ClassFieldsValidator {
 
-    public static void validateClassFields(LoanApplicationRequestDTO dto) throws IncorrectRequestParametersException {
+    public static void validateClassFields(LoanApplicationRequestDTO dto) {
         validateAmount(dto.getAmount());
         validateTerm(dto.getTerm());
         validateFirstName(dto.getFirstName());
@@ -23,7 +23,7 @@ public class ClassFieldsValidator {
         validatePassportSeries(dto.getPassportSeries());
     }
 
-    public static void validateClassFields(ScoringDataDTO dto) throws IncorrectRequestParametersException {
+    public static void validateClassFields(ScoringDataDTO dto) {
         validateAmount(dto.getAmount());
         validateTerm(dto.getTerm());
         validateFirstName(dto.getFirstName());

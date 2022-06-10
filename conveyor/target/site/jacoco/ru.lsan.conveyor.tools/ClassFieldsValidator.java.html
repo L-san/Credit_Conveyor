@@ -11,7 +11,7 @@ import java.time.LocalDate;
 <span class="fc" id="L11">@Log4j2</span>
 <span class="nc" id="L12">public class ClassFieldsValidator {</span>
 
-    public static void validateClassFields(LoanApplicationRequestDTO dto) throws IncorrectRequestParametersException {
+    public static void validateClassFields(LoanApplicationRequestDTO dto) {
 <span class="fc" id="L15">        validateAmount(dto.getAmount());</span>
 <span class="fc" id="L16">        validateTerm(dto.getTerm());</span>
 <span class="fc" id="L17">        validateFirstName(dto.getFirstName());</span>
@@ -23,7 +23,7 @@ import java.time.LocalDate;
 <span class="fc" id="L23">        validatePassportSeries(dto.getPassportSeries());</span>
 <span class="fc" id="L24">    }</span>
 
-    public static void validateClassFields(ScoringDataDTO dto) throws IncorrectRequestParametersException {
+    public static void validateClassFields(ScoringDataDTO dto) {
 <span class="fc" id="L27">        validateAmount(dto.getAmount());</span>
 <span class="fc" id="L28">        validateTerm(dto.getTerm());</span>
 <span class="fc" id="L29">        validateFirstName(dto.getFirstName());</span>

@@ -43,10 +43,10 @@ class ConveyorControllerTest {
                 "123456"
         );
 
-        String expectedResponse1 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":200000,\"term\":12,\"monthlyPayment\":null,\"rate\":7,\"isInsuranceEnabled\":true,\"isSalaryClient\":true}";
-        String expectedResponse2 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":200000,\"term\":12,\"monthlyPayment\":null,\"rate\":8,\"isInsuranceEnabled\":false,\"isSalaryClient\":false}";
-        String expectedResponse3 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":200000,\"term\":12,\"monthlyPayment\":null,\"rate\":9,\"isInsuranceEnabled\":true,\"isSalaryClient\":false}";
-        String expectedResponse4 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":100000,\"term\":12,\"monthlyPayment\":null,\"rate\":13,\"isInsuranceEnabled\":false,\"isSalaryClient\":true}";
+        String expectedResponse1 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":200000,\"term\":12,\"monthlyPayment\":null,\"rate\":8,\"isInsuranceEnabled\":true,\"isSalaryClient\":true}";
+        String expectedResponse2 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":200000,\"term\":12,\"monthlyPayment\":null,\"rate\":10,\"isInsuranceEnabled\":true,\"isSalaryClient\":false}";
+        String expectedResponse3 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":100000,\"term\":12,\"monthlyPayment\":null,\"rate\":10,\"isInsuranceEnabled\":false,\"isSalaryClient\":true}";
+        String expectedResponse4 = "{\"applicationId\":null,\"requestedAmount\":100000,\"totalAmount\":100000,\"term\":12,\"monthlyPayment\":null,\"rate\":12,\"isInsuranceEnabled\":false,\"isSalaryClient\":false}";
 
         String response;
 

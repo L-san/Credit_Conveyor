@@ -3,13 +3,15 @@
 import java.math.BigDecimal;
 import java.util.*;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
 import ru.lsan.conveyor.dto.LoanOfferDTO;
 
+<span class="fc" id="L12">@Log4j2</span>
 @Service
-<span class="fc" id="L12">public class PrescoringService {</span>
+<span class="fc" id="L14">public class PrescoringService {</span>
 
     @Value(&quot;${baseLoanRate}&quot;)
     private BigDecimal baseLoanRate;
@@ -17,32 +19,66 @@ import ru.lsan.conveyor.dto.LoanOfferDTO;
     @Value(&quot;${baseInsuranceCost}&quot;)
     private BigDecimal baseInsuranceCost;
 
+    @Value(&quot;${insuranceRate}&quot;)
+    private int insuranceRate;
+
+    @Value(&quot;${salaryRate}&quot;)
+    private int salaryRate;
+
     public List&lt;LoanOfferDTO&gt; prescoreLoan(LoanApplicationRequestDTO dto) {
-<span class="fc" id="L21">        List&lt;LoanOfferDTO&gt; loanOfferDTOList = new ArrayList&lt;&gt;(4);</span>
+<span class="fc" id="L29">        List&lt;LoanOfferDTO&gt; loanOfferDTOList = new ArrayList&lt;&gt;(4);</span>
 
-<span class="fc" id="L23">        LoanOfferDTO insuranceEnabledSalaryClientDto = new LoanOfferDTO(dto, true, true);</span>
-<span class="fc" id="L24">        insuranceEnabledSalaryClientDto.setRate(baseLoanRate.subtract(BigDecimal.valueOf(3)));</span>
-<span class="fc" id="L25">        insuranceEnabledSalaryClientDto.setTotalAmount(dto.getAmount().add(baseInsuranceCost));</span>
-<span class="fc" id="L26">        loanOfferDTOList.add(insuranceEnabledSalaryClientDto);</span>
+<span class="fc" id="L31">        LoanOfferDTO insuranceEnabledSalaryClientDto =  prescoreOfferDto(dto, true, true);</span>
+<span class="fc" id="L32">        loanOfferDTOList.add(insuranceEnabledSalaryClientDto);</span>
 
-<span class="fc" id="L28">        LoanOfferDTO insuranceEnabledNotSalaryClientDto = new LoanOfferDTO(dto, true, false);</span>
-<span class="fc" id="L29">        insuranceEnabledNotSalaryClientDto.setRate(baseLoanRate.subtract(BigDecimal.valueOf(1)));</span>
-<span class="fc" id="L30">        insuranceEnabledNotSalaryClientDto.setTotalAmount(dto.getAmount().add(baseInsuranceCost));</span>
-<span class="fc" id="L31">        loanOfferDTOList.add(insuranceEnabledNotSalaryClientDto);</span>
+<span class="fc" id="L34">        LoanOfferDTO insuranceEnabledNotSalaryClientDto =  prescoreOfferDto(dto, true, false);</span>
+<span class="fc" id="L35">        loanOfferDTOList.add(insuranceEnabledNotSalaryClientDto);</span>
 
-<span class="fc" id="L33">        LoanOfferDTO notInsuranceEnabledSalaryClientDto = new LoanOfferDTO(dto, false, true);</span>
-<span class="fc" id="L34">        notInsuranceEnabledSalaryClientDto.setRate(baseLoanRate.add(BigDecimal.valueOf(3)));</span>
-<span class="fc" id="L35">        notInsuranceEnabledSalaryClientDto.setTotalAmount(dto.getAmount());</span>
-<span class="fc" id="L36">        loanOfferDTOList.add(notInsuranceEnabledSalaryClientDto);</span>
+<span class="fc" id="L37">        LoanOfferDTO notInsuranceEnabledSalaryClientDto =  prescoreOfferDto(dto, false, true);</span>
+<span class="fc" id="L38">        loanOfferDTOList.add(notInsuranceEnabledSalaryClientDto);</span>
 
-<span class="fc" id="L38">        LoanOfferDTO notInsuranceEnabledNotSalaryClientDto = new LoanOfferDTO(dto, false, false);</span>
-<span class="fc" id="L39">        notInsuranceEnabledNotSalaryClientDto.setRate(baseLoanRate.subtract(BigDecimal.valueOf(2)));</span>
-<span class="fc" id="L40">        notInsuranceEnabledNotSalaryClientDto.setTotalAmount(dto.getAmount().add(baseInsuranceCost));</span>
+<span class="fc" id="L40">        LoanOfferDTO notInsuranceEnabledNotSalaryClientDto =  prescoreOfferDto(dto, false, false);</span>
 <span class="fc" id="L41">        loanOfferDTOList.add(notInsuranceEnabledNotSalaryClientDto);</span>
 
 <span class="fc" id="L43">        loanOfferDTOList.sort(Comparator.comparing(LoanOfferDTO::getRate));</span>
-
+<span class="fc" id="L44">        log.info(&quot;loan prescored&quot;);</span>
 <span class="fc" id="L45">        return loanOfferDTOList;</span>
+    }
+
+    private LoanOfferDTO prescoreOfferDto(LoanApplicationRequestDTO dto, Boolean isInsuranceEnabled, Boolean isSalaryClient) {
+<span class="fc" id="L49">        LoanOfferDTO loanOfferDTO = new LoanOfferDTO(dto, isInsuranceEnabled, isSalaryClient);</span>
+<span class="fc" id="L50">        loanOfferDTO.setRate(calculateRate(isInsuranceEnabled,isSalaryClient));</span>
+<span class="fc" id="L51">        loanOfferDTO.setTotalAmount(calculateTotalAmount(isInsuranceEnabled,dto));</span>
+<span class="fc" id="L52">        return loanOfferDTO;</span>
+    }
+
+    private BigDecimal calculateTotalAmount(Boolean isInsuranceEnabled, LoanApplicationRequestDTO dto) {
+<span class="fc" id="L56">        BigDecimal amount = dto.getAmount();</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (isInsuranceEnabled) {</span>
+<span class="fc" id="L58">            return amount.add(baseInsuranceCost);</span>
+        } else {
+<span class="fc" id="L60">            return amount;</span>
+        }
+    }
+
+    private BigDecimal calculateRate(Boolean isInsuranceEnabled, Boolean isSalaryClient) {
+<span class="fc" id="L65">        BigDecimal finalRate = baseLoanRate;</span>
+<span class="fc" id="L66">        int rate = getInsuranceRate(isInsuranceEnabled)+ getSalaryRate(isSalaryClient);</span>
+<span class="fc" id="L67">        BigDecimal rateBD = BigDecimal.valueOf(Math.abs(rate));</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (rate &lt; 0) {</span>
+<span class="fc" id="L69">            finalRate = finalRate.subtract(rateBD);</span>
+        } else {
+<span class="fc" id="L71">            finalRate = finalRate.add(rateBD);</span>
+        }
+<span class="fc" id="L73">        return finalRate;</span>
+    }
+
+    private int getInsuranceRate(Boolean b) {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        return b ? -insuranceRate : insuranceRate;</span>
+    }
+
+    private int getSalaryRate(Boolean b) {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        return b ? -salaryRate : salaryRate;</span>
     }
 
 }

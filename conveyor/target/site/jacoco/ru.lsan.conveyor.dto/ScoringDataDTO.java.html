@@ -8,75 +8,74 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.lsan.conveyor.dto.enums.GenderEnum;
 import ru.lsan.conveyor.dto.enums.MaritalStatusEnum;
 
-<span class="pc bnc" id="L17" title="All 142 branches missed.">@Data</span>
+<span class="pc bnc" id="L16" title="All 142 branches missed.">@Data</span>
 public class ScoringDataDTO {
 
-<span class="fc" id="L20">    private BigDecimal amount;</span>
+<span class="fc" id="L19">    private BigDecimal amount;</span>
 
-<span class="fc" id="L22">    private Integer term;</span>
+<span class="fc" id="L21">    private Integer term;</span>
 
-<span class="fc" id="L24">    private String firstName;</span>
+<span class="fc" id="L23">    private String firstName;</span>
 
-<span class="fc" id="L26">    private String lastName;</span>
+<span class="fc" id="L25">    private String lastName;</span>
 
-<span class="fc" id="L28">    private String middleName;</span>
+<span class="fc" id="L27">    private String middleName;</span>
 
-<span class="fc" id="L30">    private GenderEnum gender;</span>
-
-    @JsonFormat(pattern = &quot;dd/MM/yyyy&quot;)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @DateTimeFormat(pattern = &quot;dd/MM/yyyy&quot;)
-<span class="fc" id="L36">    private LocalDate birthdate;</span>
-
-<span class="fc" id="L38">    private String passportSeries;</span>
-
-<span class="fc" id="L40">    private String passportNumber;</span>
+<span class="fc" id="L29">    private GenderEnum gender;</span>
 
     @JsonFormat(pattern = &quot;dd/MM/yyyy&quot;)
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @DateTimeFormat(pattern = &quot;dd/MM/yyyy&quot;)
-<span class="fc" id="L46">    private LocalDate passportIssueDate;</span>
+<span class="fc" id="L35">    private LocalDate birthdate;</span>
 
-<span class="fc" id="L48">    private String passportIssueBranch;</span>
+<span class="fc" id="L37">    private String passportSeries;</span>
 
-<span class="fc" id="L50">    private MaritalStatusEnum maritalStatus;</span>
+<span class="fc" id="L39">    private String passportNumber;</span>
 
-<span class="fc" id="L52">    private Integer dependentAmount;</span>
+    @JsonFormat(pattern = &quot;dd/MM/yyyy&quot;)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @DateTimeFormat(pattern = &quot;dd/MM/yyyy&quot;)
+<span class="fc" id="L45">    private LocalDate passportIssueDate;</span>
 
-<span class="fc" id="L54">    private EmploymentDTO employment;</span>
+<span class="fc" id="L47">    private String passportIssueBranch;</span>
 
-<span class="fc" id="L56">    private String account;</span>
+<span class="fc" id="L49">    private MaritalStatusEnum maritalStatus;</span>
 
-<span class="fc" id="L58">    private Boolean isInsuranceEnabled;</span>
+<span class="fc" id="L51">    private Integer dependentAmount;</span>
 
-<span class="fc" id="L60">    private Boolean isSalaryClient;</span>
+<span class="fc" id="L53">    private EmploymentDTO employment;</span>
+
+<span class="fc" id="L55">    private String account;</span>
+
+<span class="fc" id="L57">    private Boolean isInsuranceEnabled;</span>
+
+<span class="fc" id="L59">    private Boolean isSalaryClient;</span>
 
     public void getNewDto(BigDecimal amount, Integer term, String firstName, String lastName, String middleName, GenderEnum gender, LocalDate birthdate, String passportSeries, String passportNumber, LocalDate passportIssueDate, String passportIssueBranch, MaritalStatusEnum maritalStatus, Integer dependentAmount, EmploymentDTO employment, String account, Boolean isInsuranceEnabled, Boolean isSalaryClient) {
-<span class="fc" id="L63">        this.amount = amount;</span>
-<span class="fc" id="L64">        this.term = term;</span>
-<span class="fc" id="L65">        this.firstName = firstName;</span>
-<span class="fc" id="L66">        this.lastName = lastName;</span>
-<span class="fc" id="L67">        this.middleName = middleName;</span>
-<span class="fc" id="L68">        this.gender = gender;</span>
-<span class="fc" id="L69">        this.birthdate = birthdate;</span>
-<span class="fc" id="L70">        this.passportSeries = passportSeries;</span>
-<span class="fc" id="L71">        this.passportNumber = passportNumber;</span>
-<span class="fc" id="L72">        this.passportIssueDate = passportIssueDate;</span>
-<span class="fc" id="L73">        this.passportIssueBranch = passportIssueBranch;</span>
-<span class="fc" id="L74">        this.maritalStatus = maritalStatus;</span>
-<span class="fc" id="L75">        this.dependentAmount = dependentAmount;</span>
-<span class="fc" id="L76">        this.employment = employment;</span>
-<span class="fc" id="L77">        this.account = account;</span>
-<span class="fc" id="L78">        this.isInsuranceEnabled = isInsuranceEnabled;</span>
-<span class="fc" id="L79">        this.isSalaryClient = isSalaryClient;</span>
-<span class="fc" id="L80">    }</span>
+<span class="fc" id="L62">        this.amount = amount;</span>
+<span class="fc" id="L63">        this.term = term;</span>
+<span class="fc" id="L64">        this.firstName = firstName;</span>
+<span class="fc" id="L65">        this.lastName = lastName;</span>
+<span class="fc" id="L66">        this.middleName = middleName;</span>
+<span class="fc" id="L67">        this.gender = gender;</span>
+<span class="fc" id="L68">        this.birthdate = birthdate;</span>
+<span class="fc" id="L69">        this.passportSeries = passportSeries;</span>
+<span class="fc" id="L70">        this.passportNumber = passportNumber;</span>
+<span class="fc" id="L71">        this.passportIssueDate = passportIssueDate;</span>
+<span class="fc" id="L72">        this.passportIssueBranch = passportIssueBranch;</span>
+<span class="fc" id="L73">        this.maritalStatus = maritalStatus;</span>
+<span class="fc" id="L74">        this.dependentAmount = dependentAmount;</span>
+<span class="fc" id="L75">        this.employment = employment;</span>
+<span class="fc" id="L76">        this.account = account;</span>
+<span class="fc" id="L77">        this.isInsuranceEnabled = isInsuranceEnabled;</span>
+<span class="fc" id="L78">        this.isSalaryClient = isSalaryClient;</span>
+<span class="fc" id="L79">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

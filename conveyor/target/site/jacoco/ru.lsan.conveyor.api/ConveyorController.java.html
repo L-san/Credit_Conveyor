@@ -11,17 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import ru.lsan.conveyor.dto.CreditDTO;
 import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
 import ru.lsan.conveyor.dto.ScoringDataDTO;
-import ru.lsan.conveyor.exception.custom_exceptions.IncorrectRequestParametersException;
-import ru.lsan.conveyor.exception.custom_exceptions.LoanDenialException;
 import ru.lsan.conveyor.service.PrescoringService;
 import ru.lsan.conveyor.service.ScoringService;
 import ru.lsan.conveyor.tools.ClassFieldsValidator;
 
 @RestController
 @RequestMapping(&quot;/conveyor&quot;)
-<span class="fc" id="L22">@Log4j2</span>
+<span class="fc" id="L20">@Log4j2</span>
 @Api(value = &quot;Микросервис: кредитный конвеер&quot;)
-<span class="fc" id="L24">public class ConveyorController {</span>
+<span class="fc" id="L22">public class ConveyorController {</span>
 
     @Autowired
     private PrescoringService prescoringService;
@@ -32,19 +30,19 @@ import ru.lsan.conveyor.tools.ClassFieldsValidator;
     @PostMapping(&quot;/offers&quot;)
     @ApiOperation(value = &quot;валидация присланных данных + расчёт возможных условий кредита&quot;)
     public ResponseEntity offers(@RequestBody LoanApplicationRequestDTO dto) {
-<span class="fc" id="L35">        ClassFieldsValidator.validateClassFields(dto);</span>
-<span class="fc" id="L36">        log.info(&quot;/conveyor/offers: accepted dto&quot;);</span>
-<span class="fc" id="L37">        return ResponseEntity.of(Optional.of(prescoringService.prescoreLoan(dto)));</span>
+<span class="fc" id="L33">        ClassFieldsValidator.validateClassFields(dto);</span>
+<span class="fc" id="L34">        log.info(&quot;/conveyor/offers: accepted dto&quot;);</span>
+<span class="fc" id="L35">        return ResponseEntity.of(Optional.of(prescoringService.prescoreLoan(dto)));</span>
     }
 
     @PostMapping(&quot;/calculation&quot;)
     @ApiOperation(value = &quot;скоринг данных + полный расчет параметров кредита&quot;)
     public ResponseEntity calculation(@RequestBody ScoringDataDTO dto) {
         CreditDTO creditDTO;
-<span class="fc" id="L44">        ClassFieldsValidator.validateClassFields(dto);</span>
-<span class="fc" id="L45">        creditDTO = scoringService.scoreLoan(dto);</span>
-<span class="fc" id="L46">        log.info(&quot;/conveyor/calculation: accepted dto&quot;);</span>
-<span class="fc" id="L47">        return ResponseEntity.of(Optional.of(creditDTO));</span>
+<span class="fc" id="L42">        ClassFieldsValidator.validateClassFields(dto);</span>
+<span class="fc" id="L43">        creditDTO = scoringService.scoreLoan(dto);</span>
+<span class="fc" id="L44">        log.info(&quot;/conveyor/calculation: accepted dto&quot;);</span>
+<span class="fc" id="L45">        return ResponseEntity.of(Optional.of(creditDTO));</span>
     }
 
 }

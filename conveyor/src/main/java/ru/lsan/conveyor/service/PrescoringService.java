@@ -3,11 +3,13 @@ package ru.lsan.conveyor.service;
 import java.math.BigDecimal;
 import java.util.*;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
 import ru.lsan.conveyor.dto.LoanOfferDTO;
 
+@Log4j2
 @Service
 public class PrescoringService {
 
@@ -17,32 +19,66 @@ public class PrescoringService {
     @Value("${baseInsuranceCost}")
     private BigDecimal baseInsuranceCost;
 
+    @Value("${insuranceRate}")
+    private int insuranceRate;
+
+    @Value("${salaryRate}")
+    private int salaryRate;
+
     public List<LoanOfferDTO> prescoreLoan(LoanApplicationRequestDTO dto) {
         List<LoanOfferDTO> loanOfferDTOList = new ArrayList<>(4);
 
-        LoanOfferDTO insuranceEnabledSalaryClientDto = new LoanOfferDTO(dto, true, true);
-        insuranceEnabledSalaryClientDto.setRate(baseLoanRate.subtract(BigDecimal.valueOf(3)));
-        insuranceEnabledSalaryClientDto.setTotalAmount(dto.getAmount().add(baseInsuranceCost));
+        LoanOfferDTO insuranceEnabledSalaryClientDto =  prescoreOfferDto(dto, true, true);
         loanOfferDTOList.add(insuranceEnabledSalaryClientDto);
 
-        LoanOfferDTO insuranceEnabledNotSalaryClientDto = new LoanOfferDTO(dto, true, false);
-        insuranceEnabledNotSalaryClientDto.setRate(baseLoanRate.subtract(BigDecimal.valueOf(1)));
-        insuranceEnabledNotSalaryClientDto.setTotalAmount(dto.getAmount().add(baseInsuranceCost));
+        LoanOfferDTO insuranceEnabledNotSalaryClientDto =  prescoreOfferDto(dto, true, false);
         loanOfferDTOList.add(insuranceEnabledNotSalaryClientDto);
 
-        LoanOfferDTO notInsuranceEnabledSalaryClientDto = new LoanOfferDTO(dto, false, true);
-        notInsuranceEnabledSalaryClientDto.setRate(baseLoanRate.add(BigDecimal.valueOf(3)));
-        notInsuranceEnabledSalaryClientDto.setTotalAmount(dto.getAmount());
+        LoanOfferDTO notInsuranceEnabledSalaryClientDto =  prescoreOfferDto(dto, false, true);
         loanOfferDTOList.add(notInsuranceEnabledSalaryClientDto);
 
-        LoanOfferDTO notInsuranceEnabledNotSalaryClientDto = new LoanOfferDTO(dto, false, false);
-        notInsuranceEnabledNotSalaryClientDto.setRate(baseLoanRate.subtract(BigDecimal.valueOf(2)));
-        notInsuranceEnabledNotSalaryClientDto.setTotalAmount(dto.getAmount().add(baseInsuranceCost));
+        LoanOfferDTO notInsuranceEnabledNotSalaryClientDto =  prescoreOfferDto(dto, false, false);
         loanOfferDTOList.add(notInsuranceEnabledNotSalaryClientDto);
 
         loanOfferDTOList.sort(Comparator.comparing(LoanOfferDTO::getRate));
-
+        log.info("loan prescored");
         return loanOfferDTOList;
+    }
+
+    private LoanOfferDTO prescoreOfferDto(LoanApplicationRequestDTO dto, Boolean isInsuranceEnabled, Boolean isSalaryClient) {
+        LoanOfferDTO loanOfferDTO = new LoanOfferDTO(dto, isInsuranceEnabled, isSalaryClient);
+        loanOfferDTO.setRate(calculateRate(isInsuranceEnabled,isSalaryClient));
+        loanOfferDTO.setTotalAmount(calculateTotalAmount(isInsuranceEnabled,dto));
+        return loanOfferDTO;
+    }
+
+    private BigDecimal calculateTotalAmount(Boolean isInsuranceEnabled, LoanApplicationRequestDTO dto) {
+        BigDecimal amount = dto.getAmount();
+        if (isInsuranceEnabled) {
+            return amount.add(baseInsuranceCost);
+        } else {
+            return amount;
+        }
+    }
+
+    private BigDecimal calculateRate(Boolean isInsuranceEnabled, Boolean isSalaryClient) {
+        BigDecimal finalRate = baseLoanRate;
+        int rate = getInsuranceRate(isInsuranceEnabled)+ getSalaryRate(isSalaryClient);
+        BigDecimal rateBD = BigDecimal.valueOf(Math.abs(rate));
+        if (rate < 0) {
+            finalRate = finalRate.subtract(rateBD);
+        } else {
+            finalRate = finalRate.add(rateBD);
+        }
+        return finalRate;
+    }
+
+    private int getInsuranceRate(Boolean b) {
+        return b ? -insuranceRate : insuranceRate;
+    }
+
+    private int getSalaryRate(Boolean b) {
+        return b ? -salaryRate : salaryRate;
     }
 
 }

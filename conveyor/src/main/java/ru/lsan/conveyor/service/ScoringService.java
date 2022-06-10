@@ -1,5 +1,6 @@
 package ru.lsan.conveyor.service;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.lsan.conveyor.dto.CreditDTO;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 @Service
 public class ScoringService {
 
@@ -25,22 +27,37 @@ public class ScoringService {
 
     private final int scale = 10;
 
-    public CreditDTO scoreLoan(ScoringDataDTO dto) throws LoanDenialException {
-        if (ScoringConditions.isLoanShouldBeDenied(dto)) throw new LoanDenialException("Loan is denied");
+    public CreditDTO scoreLoan(ScoringDataDTO dto) {
+        if (ScoringConditions.isLoanShouldBeDenied(dto)) throw new LoanDenialException(""+dto.getLastName()+" loan is denied");
         return calculateCredit(dto);
     }
 
     private BigDecimal calculateRate(ScoringDataDTO dto) {
         BigDecimal rate = baseLoanRate;
-        if (ScoringConditions.isSelfEmployed(dto))      rate = rate.add(BigDecimal.valueOf(1));
-        if (ScoringConditions.isBusinessMan(dto))       rate = rate.subtract(BigDecimal.valueOf(2));
-        if (ScoringConditions.isTopManager(dto))        rate = rate.subtract(BigDecimal.valueOf(4));
-        if (ScoringConditions.isMarried(dto))           rate = rate.subtract(BigDecimal.valueOf(3));
-        if (ScoringConditions.isDivorced(dto))          rate = rate.add(BigDecimal.valueOf(1));
-        if (ScoringConditions.isFemaleFrom35to60(dto))  rate = rate.subtract(BigDecimal.valueOf(3));
-        if (ScoringConditions.isMaleFrom30to55(dto))    rate = rate.subtract(BigDecimal.valueOf(3));
-        if (ScoringConditions.isGenderNonBinary(dto))   rate = rate.add(BigDecimal.valueOf(3));
-
+        if (ScoringConditions.isSelfEmployed(dto)) {
+            rate = rate.add(BigDecimal.valueOf(1));
+        }
+        if (ScoringConditions.isBusinessMan(dto)) {
+            rate = rate.subtract(BigDecimal.valueOf(2));
+        }
+        if (ScoringConditions.isTopManager(dto)) {
+            rate = rate.subtract(BigDecimal.valueOf(4));
+        }
+        if (ScoringConditions.isMarried(dto)) {
+            rate = rate.subtract(BigDecimal.valueOf(3));
+        }
+        if (ScoringConditions.isDivorced(dto)) {
+            rate = rate.add(BigDecimal.valueOf(1));
+        }
+        if (ScoringConditions.isFemaleFrom35to60(dto)) {
+            rate = rate.subtract(BigDecimal.valueOf(3));
+        }
+        if (ScoringConditions.isMaleFrom30to55(dto)) {
+            rate = rate.subtract(BigDecimal.valueOf(3));
+        }
+        if (ScoringConditions.isGenderNonBinary(dto)) {
+            rate = rate.add(BigDecimal.valueOf(3));
+        }
         return rate;
     }
 

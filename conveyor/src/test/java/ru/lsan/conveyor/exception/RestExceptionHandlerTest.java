@@ -73,7 +73,7 @@ class RestExceptionHandlerTest {
         dto4.getEmployment().setWorkExperienceCurrent(2);
         dto4.getEmployment().setWorkExperienceTotal(2);
 
-        String fault = "Loan is denied";
+        String fault = "Ivanov loan is denied";
         String response1, response2, response3, response4;
         try {
             response1 = mockMvc.perform(

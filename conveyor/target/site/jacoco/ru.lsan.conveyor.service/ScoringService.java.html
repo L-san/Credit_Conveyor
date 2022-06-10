@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScoringService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">conveyor</a> &gt; <a href="index.source.html" class="el_package">ru.lsan.conveyor.service</a> &gt; <span class="el_source">ScoringService.java</span></div><h1>ScoringService.java</h1><pre class="source lang-java linenums">package ru.lsan.conveyor.service;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.lsan.conveyor.dto.CreditDTO;
@@ -17,82 +18,98 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+<span class="fc" id="L21">@Log4j2</span>
 @Service
-<span class="fc" id="L21">public class ScoringService {</span>
+<span class="fc" id="L23">public class ScoringService {</span>
 
     @Value(&quot;${baseLoanRate}&quot;)
     private BigDecimal baseLoanRate;
 
-<span class="fc" id="L26">    private final int scale = 10;</span>
+<span class="fc" id="L28">    private final int scale = 10;</span>
 
-    public CreditDTO scoreLoan(ScoringDataDTO dto) throws LoanDenialException {
-<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (ScoringConditions.isLoanShouldBeDenied(dto)) throw new LoanDenialException(&quot;Loan is denied&quot;);</span>
-<span class="fc" id="L30">        return calculateCredit(dto);</span>
+    public CreditDTO scoreLoan(ScoringDataDTO dto) {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        if (ScoringConditions.isLoanShouldBeDenied(dto)) throw new LoanDenialException(&quot;&quot;+dto.getLastName()+&quot; loan is denied&quot;);</span>
+<span class="fc" id="L32">        return calculateCredit(dto);</span>
     }
 
     private BigDecimal calculateRate(ScoringDataDTO dto) {
-<span class="fc" id="L34">        BigDecimal rate = baseLoanRate;</span>
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        if (ScoringConditions.isSelfEmployed(dto))      rate = rate.add(BigDecimal.valueOf(1));</span>
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (ScoringConditions.isBusinessMan(dto))       rate = rate.subtract(BigDecimal.valueOf(2));</span>
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (ScoringConditions.isTopManager(dto))        rate = rate.subtract(BigDecimal.valueOf(4));</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if (ScoringConditions.isMarried(dto))           rate = rate.subtract(BigDecimal.valueOf(3));</span>
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        if (ScoringConditions.isDivorced(dto))          rate = rate.add(BigDecimal.valueOf(1));</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (ScoringConditions.isFemaleFrom35to60(dto))  rate = rate.subtract(BigDecimal.valueOf(3));</span>
-<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (ScoringConditions.isMaleFrom30to55(dto))    rate = rate.subtract(BigDecimal.valueOf(3));</span>
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if (ScoringConditions.isGenderNonBinary(dto))   rate = rate.add(BigDecimal.valueOf(3));</span>
-
-<span class="fc" id="L44">        return rate;</span>
+<span class="fc" id="L36">        BigDecimal rate = baseLoanRate;</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (ScoringConditions.isSelfEmployed(dto)) {</span>
+<span class="nc" id="L38">            rate = rate.add(BigDecimal.valueOf(1));</span>
+        }
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (ScoringConditions.isBusinessMan(dto)) {</span>
+<span class="nc" id="L41">            rate = rate.subtract(BigDecimal.valueOf(2));</span>
+        }
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        if (ScoringConditions.isTopManager(dto)) {</span>
+<span class="nc" id="L44">            rate = rate.subtract(BigDecimal.valueOf(4));</span>
+        }
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (ScoringConditions.isMarried(dto)) {</span>
+<span class="nc" id="L47">            rate = rate.subtract(BigDecimal.valueOf(3));</span>
+        }
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (ScoringConditions.isDivorced(dto)) {</span>
+<span class="nc" id="L50">            rate = rate.add(BigDecimal.valueOf(1));</span>
+        }
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        if (ScoringConditions.isFemaleFrom35to60(dto)) {</span>
+<span class="nc" id="L53">            rate = rate.subtract(BigDecimal.valueOf(3));</span>
+        }
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (ScoringConditions.isMaleFrom30to55(dto)) {</span>
+<span class="fc" id="L56">            rate = rate.subtract(BigDecimal.valueOf(3));</span>
+        }
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (ScoringConditions.isGenderNonBinary(dto)) {</span>
+<span class="nc" id="L59">            rate = rate.add(BigDecimal.valueOf(3));</span>
+        }
+<span class="fc" id="L61">        return rate;</span>
     }
 
     //аннуитетные платежи
     private CreditDTO calculateCredit(ScoringDataDTO dto) {
-<span class="fc" id="L49">        BigDecimal rate = calculateRate(dto);</span>
-<span class="fc" id="L50">        CreditDTO creditDTO = CreditDTO.builder()</span>
-<span class="fc" id="L51">                .amount(dto.getAmount())</span>
-<span class="fc" id="L52">                .term(dto.getTerm())</span>
-<span class="fc" id="L53">                .rate(rate)</span>
-<span class="fc" id="L54">                .isInsuranceEnabled(dto.getIsInsuranceEnabled())</span>
-<span class="fc" id="L55">                .isSalaryClient(dto.getIsSalaryClient())</span>
-<span class="fc" id="L56">                .build();</span>
+<span class="fc" id="L66">        BigDecimal rate = calculateRate(dto);</span>
+<span class="fc" id="L67">        CreditDTO creditDTO = CreditDTO.builder()</span>
+<span class="fc" id="L68">                .amount(dto.getAmount())</span>
+<span class="fc" id="L69">                .term(dto.getTerm())</span>
+<span class="fc" id="L70">                .rate(rate)</span>
+<span class="fc" id="L71">                .isInsuranceEnabled(dto.getIsInsuranceEnabled())</span>
+<span class="fc" id="L72">                .isSalaryClient(dto.getIsSalaryClient())</span>
+<span class="fc" id="L73">                .build();</span>
 
-<span class="fc" id="L58">        BigDecimal monthlyRate = creditDTO.getRate().divide(BigDecimal.valueOf(1200), scale, RoundingMode.HALF_UP);</span>
-<span class="fc" id="L59">        BigDecimal amount = creditDTO.getAmount();</span>
+<span class="fc" id="L75">        BigDecimal monthlyRate = creditDTO.getRate().divide(BigDecimal.valueOf(1200), scale, RoundingMode.HALF_UP);</span>
+<span class="fc" id="L76">        BigDecimal amount = creditDTO.getAmount();</span>
         BigDecimal monthlyPayment;
-<span class="fc" id="L61">        Integer period = creditDTO.getTerm();</span>
+<span class="fc" id="L78">        Integer period = creditDTO.getTerm();</span>
 
-<span class="fc" id="L63">        BigDecimal sub1 = BigDecimal.ONE.add(monthlyRate).pow(period);</span>
-<span class="fc" id="L64">        BigDecimal sub = BigDecimal.ONE.divide(sub1, scale, RoundingMode.HALF_UP);</span>
+<span class="fc" id="L80">        BigDecimal sub1 = BigDecimal.ONE.add(monthlyRate).pow(period);</span>
+<span class="fc" id="L81">        BigDecimal sub = BigDecimal.ONE.divide(sub1, scale, RoundingMode.HALF_UP);</span>
 
-<span class="fc" id="L66">        BigDecimal divisor = BigDecimal.ONE.subtract(sub);</span>
-<span class="fc" id="L67">        monthlyPayment = amount.multiply(monthlyRate).divide(divisor, scale, RoundingMode.HALF_UP);</span>
-<span class="fc" id="L68">        creditDTO.setMonthlyPayment(monthlyPayment);</span>
+<span class="fc" id="L83">        BigDecimal divisor = BigDecimal.ONE.subtract(sub);</span>
+<span class="fc" id="L84">        monthlyPayment = amount.multiply(monthlyRate).divide(divisor, scale, RoundingMode.HALF_UP);</span>
+<span class="fc" id="L85">        creditDTO.setMonthlyPayment(monthlyPayment);</span>
 
-<span class="fc" id="L70">        BigDecimal psk = monthlyPayment.multiply(BigDecimal.valueOf(period));</span>
-<span class="fc" id="L71">        creditDTO.setPsk(psk);</span>
+<span class="fc" id="L87">        BigDecimal psk = monthlyPayment.multiply(BigDecimal.valueOf(period));</span>
+<span class="fc" id="L88">        creditDTO.setPsk(psk);</span>
 
-<span class="fc" id="L73">        List&lt;PaymentScheduleElement&gt; paymentScheduleElementList = new ArrayList&lt;&gt;(period);</span>
-<span class="fc" id="L74">        LocalDate currentDate = LocalDate.now();</span>
+<span class="fc" id="L90">        List&lt;PaymentScheduleElement&gt; paymentScheduleElementList = new ArrayList&lt;&gt;(period);</span>
+<span class="fc" id="L91">        LocalDate currentDate = LocalDate.now();</span>
 
-<span class="fc bfc" id="L76" title="All 2 branches covered.">        for (int i = 0; i &lt; period; i++) {</span>
-<span class="fc" id="L77">            PaymentScheduleElement e = PaymentScheduleElement.builder().build();</span>
-<span class="fc" id="L78">            BigDecimal percentCreditPayment = psk.multiply(monthlyRate);</span>
-<span class="fc" id="L79">            BigDecimal bodyCreditPayment = monthlyPayment.subtract(percentCreditPayment);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for (int i = 0; i &lt; period; i++) {</span>
+<span class="fc" id="L94">            PaymentScheduleElement e = PaymentScheduleElement.builder().build();</span>
+<span class="fc" id="L95">            BigDecimal percentCreditPayment = psk.multiply(monthlyRate);</span>
+<span class="fc" id="L96">            BigDecimal bodyCreditPayment = monthlyPayment.subtract(percentCreditPayment);</span>
 
-<span class="fc" id="L81">            e.setDate(currentDate);</span>
-<span class="fc" id="L82">            currentDate = currentDate.plusMonths(1);</span>
+<span class="fc" id="L98">            e.setDate(currentDate);</span>
+<span class="fc" id="L99">            currentDate = currentDate.plusMonths(1);</span>
 
-<span class="fc" id="L84">            e.setTotalPayment(monthlyPayment);</span>
+<span class="fc" id="L101">            e.setTotalPayment(monthlyPayment);</span>
 
-<span class="fc" id="L86">            e.setInterestPayment(bodyCreditPayment);</span>
-<span class="fc" id="L87">            e.setDebtPayment(percentCreditPayment);</span>
+<span class="fc" id="L103">            e.setInterestPayment(bodyCreditPayment);</span>
+<span class="fc" id="L104">            e.setDebtPayment(percentCreditPayment);</span>
 
-<span class="fc" id="L89">            psk = psk.subtract(monthlyPayment);</span>
-<span class="fc" id="L90">            e.setRemainingDebt(psk);</span>
-<span class="fc" id="L91">            paymentScheduleElementList.add(e);</span>
+<span class="fc" id="L106">            psk = psk.subtract(monthlyPayment);</span>
+<span class="fc" id="L107">            e.setRemainingDebt(psk);</span>
+<span class="fc" id="L108">            paymentScheduleElementList.add(e);</span>
         }
 
-<span class="fc" id="L94">        creditDTO.setPaymentScheduleElementList(paymentScheduleElementList);</span>
-<span class="fc" id="L95">        return creditDTO;</span>
+<span class="fc" id="L111">        creditDTO.setPaymentScheduleElementList(paymentScheduleElementList);</span>
+<span class="fc" id="L112">        return creditDTO;</span>
     }
 
 }

@@ -34,14 +34,14 @@ class PrescoringServiceTest {
 
         List<LoanOfferDTO> loanOfferDTOList = prescoringService.prescoreLoan(dto);
 
-        assertEquals(BigDecimal.valueOf(7), loanOfferDTOList.get(0).getRate());
-        assertEquals(BigDecimal.valueOf(8), loanOfferDTOList.get(1).getRate());
-        assertEquals(BigDecimal.valueOf(9), loanOfferDTOList.get(2).getRate());
-        assertEquals(BigDecimal.valueOf(13), loanOfferDTOList.get(3).getRate());
+        assertEquals(BigDecimal.valueOf(8), loanOfferDTOList.get(0).getRate());
+        assertEquals(BigDecimal.valueOf(10), loanOfferDTOList.get(1).getRate());
+        assertEquals(BigDecimal.valueOf(10), loanOfferDTOList.get(2).getRate());
+        assertEquals(BigDecimal.valueOf(12), loanOfferDTOList.get(3).getRate());
 
         assertEquals(BigDecimal.valueOf(200000), loanOfferDTOList.get(0).getTotalAmount());
         assertEquals(BigDecimal.valueOf(200000), loanOfferDTOList.get(1).getTotalAmount());
-        assertEquals(BigDecimal.valueOf(200000), loanOfferDTOList.get(2).getTotalAmount());
+        assertEquals(BigDecimal.valueOf(100000), loanOfferDTOList.get(2).getTotalAmount());
         assertEquals(BigDecimal.valueOf(100000), loanOfferDTOList.get(3).getTotalAmount());
     }
 

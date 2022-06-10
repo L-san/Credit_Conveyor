@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.lsan.conveyor.dto.CreditDTO;
 import ru.lsan.conveyor.dto.LoanApplicationRequestDTO;
 import ru.lsan.conveyor.dto.ScoringDataDTO;
-import ru.lsan.conveyor.exception.custom_exceptions.IncorrectRequestParametersException;
-import ru.lsan.conveyor.exception.custom_exceptions.LoanDenialException;
 import ru.lsan.conveyor.service.PrescoringService;
 import ru.lsan.conveyor.service.ScoringService;
 import ru.lsan.conveyor.tools.ClassFieldsValidator;
