@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.lsan.deal.database.entity.application.ApplicationEntity;
 import ru.lsan.deal.enums.GenderEnum;
 import ru.lsan.deal.enums.MaritalStatusEnum;
 
@@ -55,5 +56,7 @@ public class ClientEntity {
     @OneToOne(mappedBy = "client")
     private EmploymentEntity employment;
 
+    @OneToOne(mappedBy = "client")
+    private ApplicationEntity application;
 
 }

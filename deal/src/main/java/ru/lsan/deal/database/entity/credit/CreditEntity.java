@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import ru.lsan.deal.database.entity.application.ApplicationEntity;
 import ru.lsan.deal.enums.StatusEnum;
 
 import javax.persistence.*;
@@ -51,5 +52,8 @@ public class CreditEntity {
     @OneToMany(mappedBy = "credit", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<PaymentScheduleEntity> paymentScheduleList;
+
+    @OneToOne(mappedBy = "credit")
+    private ApplicationEntity application;
 
 }
