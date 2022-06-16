@@ -1,4 +1,4 @@
-package ru.lsan.deal.database.entity;
+package ru.lsan.deal.database.entity.client;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +41,7 @@ public class EmploymentEntity {
     private Integer workExperienceCurrent;
 
     @OneToOne
-    @JoinColumn(name = "client_id", nullable = false)
+    @JoinColumn(name = "client_id")
     private ClientEntity client;
 
 }

@@ -1,4 +1,4 @@
-package ru.lsan.deal.database.entity;
+package ru.lsan.deal.database.entity.client;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class ClientEntity {
     private String email;
 
     @Column(name = "dependent_amount")
-    private String dependentAmount;
+    private Integer dependentAmount;
 
     @Column(name = "gender")
     private GenderEnum gender;

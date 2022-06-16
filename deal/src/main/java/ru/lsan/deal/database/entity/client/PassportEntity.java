@@ -1,4 +1,4 @@
-package ru.lsan.deal.database.entity;
+package ru.lsan.deal.database.entity.client;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +33,7 @@ public class PassportEntity {
     private LocalDate passportIssueDate;
 
     @OneToOne
-    @JoinColumn(name = "client_id", nullable = false)
+    @JoinColumn(name = "client_id")
     private ClientEntity client;
 
 }
