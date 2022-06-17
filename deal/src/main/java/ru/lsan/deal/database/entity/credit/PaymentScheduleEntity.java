@@ -1,9 +1,6 @@
 package ru.lsan.deal.database.entity.credit;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -11,10 +8,11 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "payment_schedule")
-@Getter
-@Setter
-@Builder
+@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor
+@Setter(value = AccessLevel.PACKAGE)
+@Getter
 public class PaymentScheduleEntity {
 
     @Id

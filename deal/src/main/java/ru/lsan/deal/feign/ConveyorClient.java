@@ -4,8 +4,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.lsan.deal.dto.CreditDTO;
 import ru.lsan.deal.dto.LoanApplicationRequestDTO;
 import ru.lsan.deal.dto.LoanOfferDTO;
+import ru.lsan.deal.dto.ScoringDataDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,5 +17,8 @@ public interface ConveyorClient {
 
     @PostMapping("/offers")
     public ResponseEntity<Optional<List<LoanOfferDTO>>> offers(@RequestBody LoanApplicationRequestDTO dto);
+
+    @PostMapping("/calculation")
+    public ResponseEntity<Optional<CreditDTO>> calculation(@RequestBody ScoringDataDTO dto);
 
 }

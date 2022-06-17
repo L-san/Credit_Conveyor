@@ -9,4 +9,6 @@ public interface ApplicationService {
 
     ApplicationEntity update(ApplicationEntity application);
 
+    ApplicationEntity findById(Long id);
+
 }

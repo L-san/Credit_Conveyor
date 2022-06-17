@@ -1,9 +1,6 @@
 package ru.lsan.deal.database.entity.client;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.lsan.deal.enums.EmploymentStatusEnum;
 import ru.lsan.deal.enums.PositionEnum;
 
@@ -12,10 +9,11 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "employment")
-@Getter
-@Setter
-@Builder
+@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor
+@Setter(value = AccessLevel.PACKAGE)
+@Getter
 public class EmploymentEntity {
 
     @Id

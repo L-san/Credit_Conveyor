@@ -1,9 +1,6 @@
 package ru.lsan.deal.database.entity.client;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.lsan.deal.database.entity.application.ApplicationEntity;
 import ru.lsan.deal.enums.GenderEnum;
 import ru.lsan.deal.enums.MaritalStatusEnum;
@@ -13,10 +10,11 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "client")
-@Getter
-@Setter
-@Builder
+@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor
+@Setter(value = AccessLevel.PACKAGE)
+@Getter
 public class ClientEntity {
 
     @Id
@@ -58,5 +56,4 @@ public class ClientEntity {
 
     @OneToOne(mappedBy = "client")
     private ApplicationEntity application;
-
 }

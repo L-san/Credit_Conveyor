@@ -1,15 +1,14 @@
 package ru.lsan.deal.database.entity.application;
 
-import ch.qos.logback.core.net.server.Client;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import ru.lsan.deal.database.entity.client.ClientEntity;
 import ru.lsan.deal.database.entity.credit.CreditEntity;
-import ru.lsan.deal.database.entity.credit.PaymentScheduleEntity;
+import ru.lsan.deal.dto.LoanOfferDTO;
 import ru.lsan.deal.enums.StatusEnum;
 
 import javax.persistence.*;
@@ -18,10 +17,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "application")
-@Getter
-@Setter
-@Builder
+@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor
+@Setter
+@Getter
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class ApplicationEntity {
 
     @Id
@@ -48,7 +49,9 @@ public class ApplicationEntity {
     @JoinColumn(name = "credit_id")
     private CreditEntity credit;
 
-    //applied offer??? todo
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private LoanOfferDTO appliedOffer;
 
     @OneToMany(mappedBy = "application", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)

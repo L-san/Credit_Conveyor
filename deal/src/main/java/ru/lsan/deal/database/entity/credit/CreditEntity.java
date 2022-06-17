@@ -1,9 +1,6 @@
 package ru.lsan.deal.database.entity.credit;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import ru.lsan.deal.database.entity.application.ApplicationEntity;
@@ -15,10 +12,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "credit")
-@Getter
-@Setter
-@Builder
+@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor
+@Setter(value = AccessLevel.PACKAGE)
+@Getter
 public class CreditEntity {
 
     @Id

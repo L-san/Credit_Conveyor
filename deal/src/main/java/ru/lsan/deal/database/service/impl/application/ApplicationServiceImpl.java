@@ -26,4 +26,9 @@ public class ApplicationServiceImpl implements ApplicationService {
         return applicationRepository.save(application);
     }
 
+    @Override
+    public ApplicationEntity findById(Long id) {
+        return applicationRepository.findByAppId(id);
+    }
+
 }

@@ -1,19 +1,17 @@
 package ru.lsan.deal.database.entity.application;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.lsan.deal.enums.StatusEnum;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "status_history")
-@Getter
-@Setter
-@Builder
+@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor
+@Setter(value = AccessLevel.PACKAGE)
+@Getter
 public class StatusHistoryEntity {
 
     @Id
