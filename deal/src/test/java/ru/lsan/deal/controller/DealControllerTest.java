@@ -64,17 +64,16 @@ class DealControllerTest {
                 "1234",
                 "123456"
         );
-        String response="";
-        ClientEntity client = new ClientEntity();
-        ApplicationEntity application = ApplicationEntity.builder().id(1L).build();
-        Mockito.when(conveyorClient.offers(loanApplicationRequestDTO)).thenReturn(prescoreLoan(loanApplicationRequestDTO));
+        String response = "oops";
+        ResponseEntity<Optional<List<LoanOfferDTO>>> pLoan = prescoreLoan(loanApplicationRequestDTO);
+        Mockito.when(conveyorClient.offers(loanApplicationRequestDTO)).thenReturn(pLoan);
         try {
             response = mockMvc.perform(
                             MockMvcRequestBuilders.post("/deal/application")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(asJsonString(loanApplicationRequestDTO)))
                     .andReturn().getResponse().getContentAsString();
-            assertNotNull(response);
+            assertEquals(asJsonString(pLoan.getBody().get()),response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             assertNotEquals(RuntimeException.class, e.getClass());

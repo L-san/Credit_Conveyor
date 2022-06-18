@@ -1,6 +1,12 @@
 package ru.lsan.deal.database.entity.client;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -15,6 +21,7 @@ import java.time.LocalDate;
 public class PassportEntity {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -27,6 +34,10 @@ public class PassportEntity {
     @Column(name = "passport_issue_branch")
     private String passportIssueBranch;
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Column(name = "passport_issue_date")
     private LocalDate passportIssueDate;
 

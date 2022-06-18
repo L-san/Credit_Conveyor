@@ -15,11 +15,12 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor
-@Setter(value = AccessLevel.PACKAGE)
+@Setter
 @Getter
 public class CreditEntity {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -33,7 +34,7 @@ public class CreditEntity {
     private BigDecimal monthlyPayment;
 
     @Column(name = "rate")
-    private Double rate;
+    private BigDecimal rate;
 
     @Column(name = "psk")
     private BigDecimal psk;

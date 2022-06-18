@@ -15,6 +15,7 @@ import javax.persistence.*;
 public class StatusHistoryEntity {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
 

@@ -24,6 +24,6 @@ public class CreditDTO {
 
     private Boolean isSalaryClient;
 
-    private List<PaymentScheduleElement> paymentScheduleElementList;
+    private List<PaymentScheduleElementDto> paymentScheduleElementDtoList;
 
 }

@@ -1,11 +1,18 @@
 package ru.lsan.deal.database.entity.application;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.lsan.deal.database.entity.client.ClientEntity;
 import ru.lsan.deal.database.entity.credit.CreditEntity;
 import ru.lsan.deal.dto.LoanOfferDTO;
@@ -22,19 +29,28 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+@TypeDef(name = "json", typeClass = JsonType.class)
 public class ApplicationEntity {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "status")
     private StatusEnum status;
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Column(name = "creation_date")
     private LocalDate creationDate;
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Column(name = "sign_date")
     private LocalDate signDate;
 
@@ -49,8 +65,8 @@ public class ApplicationEntity {
     @JoinColumn(name = "credit_id")
     private CreditEntity credit;
 
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
+    @Type(type = "json")
+    @Column(columnDefinition = "json")
     private LoanOfferDTO appliedOffer;
 
     @OneToMany(mappedBy = "application", fetch = FetchType.EAGER)

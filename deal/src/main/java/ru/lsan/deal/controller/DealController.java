@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.lsan.deal.Tools;
 import ru.lsan.deal.database.entity.application.ApplicationEntity;
-import ru.lsan.deal.database.entity.application.StatusHistoryEntity;
 import ru.lsan.deal.database.entity.client.ClientEntity;
 import ru.lsan.deal.database.service.application.ApplicationService;
-import ru.lsan.deal.database.service.application.StatusHistoryService;
 import ru.lsan.deal.database.service.client.ClientService;
+import ru.lsan.deal.database.service.credit.CreditService;
 import ru.lsan.deal.dto.*;
 import ru.lsan.deal.enums.StatusEnum;
 import ru.lsan.deal.feign.ConveyorClient;
@@ -20,25 +20,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@RestController("/deal")
+@RestController
+@RequestMapping("/deal")
 @RequiredArgsConstructor
-@Api(value = "методы микросервиса")
+@Api(value = "методы микросервиса deal")
 @Log4j2
 public class DealController {
 
     private final ConveyorClient conveyorClient;
     private final ClientService clientService;
     private final ApplicationService applicationService;
-    private final StatusHistoryService statusHistoryService;
+    private final CreditService creditService;
 
     @PostMapping("/application")
     @ApiOperation(value = "расчёт возможных условий кредита")
     public ResponseEntity<List<LoanOfferDTO>> application(@RequestBody LoanApplicationRequestDTO dto) {
+        log.info("/deal/application accepted: "+ Tools.asJsonString(dto));
         ClientEntity client = clientService.create(dto);
         ApplicationEntity application = applicationService.create(client);
         ResponseEntity<Optional<List<LoanOfferDTO>>> resp = conveyorClient.offers(dto);
         if (resp.getStatusCode().is4xxClientError()) {
-            application.setStatus(StatusEnum.CC_DENIED);
+            applicationService.updateStatus(application,StatusEnum.CC_DENIED);
+            log.error("/deal/application CC_DENIED "+resp.getBody());
             return ResponseEntity.badRequest().body(new ArrayList<>());
         } else {
             List<LoanOfferDTO> loanOfferDTOList = resp.getBody().get();
@@ -46,7 +49,8 @@ public class DealController {
             for (LoanOfferDTO loan : loanOfferDTOList) {
                 loan.setApplicationId(id);
             }
-            log.info("/deal/application resolved");
+            applicationService.updateStatus(application,StatusEnum.PREAPPROVAL);
+            log.info("/deal/application resolved: "+Tools.asJsonString(application));
             return ResponseEntity.ok().body(loanOfferDTOList);
         }
     }
@@ -54,13 +58,11 @@ public class DealController {
     @PutMapping("/offer")
     @ApiOperation(value = "выбор одного из предложений")
     public void offer(@RequestBody LoanOfferDTO dto) {
+        log.info("/deal/offer accepted: "+ Tools.asJsonString(dto));
         ApplicationEntity application = applicationService.findById(dto.getApplicationId());
-        StatusHistoryEntity statusHistoryEntity = statusHistoryService.create(StatusEnum.PREAPPROVAL, application);
-        application.setStatus(StatusEnum.PREAPPROVAL);
         application.setAppliedOffer(dto);
-        applicationService.update(application);
-        log.info("/deal/offer resolved");
-        //email to user todo
+        applicationService.updateStatus(application,StatusEnum.APPROVED);
+        log.info("/deal/offer resolved :"+Tools.asJsonString(application));
     }
 
     @PutMapping("/calculate/{applicationId}")
@@ -68,41 +70,19 @@ public class DealController {
     public void calculate(@PathVariable("applicationId") Long applicationId, @RequestBody FinishRegistrationRequestDTO dto) {
         ApplicationEntity application = applicationService.findById(applicationId);
         ClientEntity client = application.getClient();
-        EmploymentDTO employmentDTO = EmploymentDTO.builder()
-                .employmentStatusEnum(client.getEmployment().getEmploymentStatus())
-                .salary(client.getEmployment().getSalary())
-                .position(client.getEmployment().getPosition())
-                .workExperienceTotal(client.getEmployment().getWorkExperienceTotal())
-                .workExperienceCurrent(client.getEmployment().getWorkExperienceCurrent())
-                .build();
-        ScoringDataDTO scoringDataDTO = ScoringDataDTO.builder()
-                .amount(application.getCredit().getAmount())
-                .term(application.getCredit().getTerm())
-                .firstName(client.getFirstName())
-                .lastName(client.getLastName())
-                .middleName(client.getMiddleName())
-                .gender(client.getGender())
-                .birthdate(client.getBirthdate())
-                .passportSeries(client.getPassport().getPassportSeries())
-                .passportNumber(client.getPassport().getPassportNumber())
-                .passportIssueDate(client.getPassport().getPassportIssueDate())
-                .passportIssueBranch(client.getPassport().getPassportIssueBranch())
-                .maritalStatus(client.getMaritalStatus())
-                .dependentAmount(client.getDependentAmount())
-                .employment(employmentDTO)
-                .account(client.getAccount())
-                .isInsuranceEnabled(application.getCredit().getIsInsuranceEnabled())
-                .isSalaryClient(application.getCredit().getIsSalaryClient())
-                .build();
+        ScoringDataDTO scoringDataDTO = ScoringDataDTO.from(application,client);
         ResponseEntity<Optional<CreditDTO>> resp = conveyorClient.calculation(scoringDataDTO);//todo
         if (resp.getStatusCode().is4xxClientError()) {
             application.setStatus(StatusEnum.CC_DENIED);
+            log.error("/calculate/{" + application.getId().toString() + "} CC_DENIED "+resp.getBody());
         } else {
             CreditDTO credit = resp.getBody().get();
+            creditService.create(credit);
+            application.setStatus(StatusEnum.APPROVED);
+            applicationService.update(application);
+            log.info("/calculate/{" + application.getId().toString() + "} resolved: "+Tools.asJsonString(application));
+            log.info("/calculate/{" + application.getId().toString() + "} resolved: "+Tools.asJsonString(credit));
         }
-        log.info("/calculate/{" + applicationId + "} resolved");
-
     }
-
 
 }
