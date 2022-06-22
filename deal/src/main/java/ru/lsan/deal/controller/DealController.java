@@ -71,14 +71,14 @@ public class DealController {
         ApplicationEntity application = applicationService.findById(applicationId);
         ClientEntity client = application.getClient();
         ScoringDataDTO scoringDataDTO = ScoringDataDTO.from(application,client);
-        ResponseEntity<Optional<CreditDTO>> resp = conveyorClient.calculation(scoringDataDTO);//todo
+        ResponseEntity<Optional<CreditDTO>> resp = conveyorClient.calculation(scoringDataDTO);
         if (resp.getStatusCode().is4xxClientError()) {
             application.setStatus(StatusEnum.CC_DENIED);
             log.error("/calculate/{" + application.getId().toString() + "} CC_DENIED "+resp.getBody());
         } else {
             CreditDTO credit = resp.getBody().get();
             creditService.create(credit);
-            application.setStatus(StatusEnum.APPROVED);
+            application.setStatus(StatusEnum.CC_APPROVED);
             applicationService.update(application);
             log.info("/calculate/{" + application.getId().toString() + "} resolved: "+Tools.asJsonString(application));
             log.info("/calculate/{" + application.getId().toString() + "} resolved: "+Tools.asJsonString(credit));

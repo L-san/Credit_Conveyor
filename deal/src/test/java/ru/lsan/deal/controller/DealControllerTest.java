@@ -1,8 +1,14 @@
 package ru.lsan.deal.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -22,11 +28,12 @@ import ru.lsan.deal.database.entity.client.PassportEntity;
 import ru.lsan.deal.database.service.application.ApplicationService;
 import ru.lsan.deal.database.service.client.ClientService;
 import ru.lsan.deal.database.service.client.PassportService;
-import ru.lsan.deal.dto.LoanApplicationRequestDTO;
-import ru.lsan.deal.dto.LoanOfferDTO;
+import ru.lsan.deal.dto.*;
+import ru.lsan.deal.enums.*;
 import ru.lsan.deal.feign.ConveyorClient;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,21 +46,21 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 @SpringBootTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class DealControllerTest {
 
-    private final BigDecimal baseLoanRate = BigDecimal.TEN;
-    private final BigDecimal baseInsuranceCost = BigDecimal.valueOf(100000);
-    private final int insuranceRate = 1;
-    private final int salaryRate = 1;
+
+
+    @Autowired
+    private ApplicationService applicationService;
 
     @Autowired
     private MockMvc mockMvc;
     @MockBean
     private ConveyorClient conveyorClient;
 
-    @Test
-    void application() {
-        LoanApplicationRequestDTO loanApplicationRequestDTO = new LoanApplicationRequestDTO(
+    private LoanApplicationRequestDTO getLoanApplicationRequestDTO() {
+        return new LoanApplicationRequestDTO(
                 BigDecimal.valueOf(100000),
                 12,
                 "Ivan",
@@ -64,16 +71,44 @@ class DealControllerTest {
                 "1234",
                 "123456"
         );
-        String response = "oops";
-        ResponseEntity<Optional<List<LoanOfferDTO>>> pLoan = prescoreLoan(loanApplicationRequestDTO);
+    }
+
+    private ResponseEntity<Optional<List<LoanOfferDTO>>> performApplication() {
+        LoanApplicationRequestDTO loanApplicationRequestDTO = getLoanApplicationRequestDTO();
+        ResponseEntity<Optional<List<LoanOfferDTO>>> pLoan = TestService.prescoreLoan(loanApplicationRequestDTO);
         Mockito.when(conveyorClient.offers(loanApplicationRequestDTO)).thenReturn(pLoan);
         try {
-            response = mockMvc.perform(
+            mockMvc.perform(
                             MockMvcRequestBuilders.post("/deal/application")
                                     .contentType(MediaType.APPLICATION_JSON)
-                                    .content(asJsonString(loanApplicationRequestDTO)))
-                    .andReturn().getResponse().getContentAsString();
-            assertEquals(asJsonString(pLoan.getBody().get()),response);
+                                    .content(asJsonString(loanApplicationRequestDTO)));
+        } catch (Exception ignored) {
+        }
+        return pLoan;
+    }
+
+    @Test
+    void test1() {
+        ResponseEntity<Optional<List<LoanOfferDTO>>> pLoan = performApplication();
+        LoanOfferDTO loanOffer = pLoan.getBody().get().get(0);
+        Long id = loanOffer.getApplicationId();
+        assertEquals(StatusEnum.PREAPPROVAL, applicationService.findById(id).getStatus());
+    }
+
+    @Test
+    void test2() {
+        LoanOfferDTO loanOffer;
+        try {
+            ResponseEntity<Optional<List<LoanOfferDTO>>> pLoan = performApplication();
+            loanOffer = pLoan.getBody().get().get(0);
+            Long id = loanOffer.getApplicationId();
+            mockMvc.perform(
+                            MockMvcRequestBuilders.put("/deal/offer")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(asJsonString(loanOffer)))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            assertEquals(StatusEnum.APPROVED, applicationService.findById(id).getStatus());
+            assertEquals(asJsonString(loanOffer), asJsonString(applicationService.findById(id).getAppliedOffer()));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             assertNotEquals(RuntimeException.class, e.getClass());
@@ -81,11 +116,48 @@ class DealControllerTest {
     }
 
     @Test
-    void offer() {
-    }
+    void test3() {
+        LoanOfferDTO loanOffer;
+        String response = "";
+        FinishRegistrationRequestDTO dto = FinishRegistrationRequestDTO.builder()
+                .gender(GenderEnum.MALE)
+                .maritalStatus(MaritalStatusEnum.DIVORCED)
+                .passportIssueDate(LocalDate.now())
+                .passportIssueBranch("this")
+                .employment(EmploymentDTO.builder()
+                        .employmentStatusEnum(EmploymentStatusEnum.EMPLOYED)
+                        .employerINN("132414")
+                        .position(PositionEnum.CEO)
+                        .salary(BigDecimal.valueOf(200000))
+                        .workExperienceCurrent(12)
+                        .workExperienceTotal(12)
+                        .build())
+                .account("133435")
+                .build();
 
-    @Test
-    void calculate() {
+
+        try {
+            ResponseEntity<Optional<List<LoanOfferDTO>>> pLoan = performApplication();
+            loanOffer = pLoan.getBody().get().get(0);
+            Long id = loanOffer.getApplicationId();
+
+            ApplicationEntity application = applicationService.findById(id);
+            ClientEntity client = application.getClient();
+            ScoringDataDTO scoringDataDTO = ScoringDataDTO.from(application,client);
+            ResponseEntity<Optional<CreditDTO>> pCredit = ResponseEntity.of(Optional.of(Optional.of(TestService.scoreLoan(scoringDataDTO))));
+            Mockito.when(conveyorClient.calculation(scoringDataDTO)).thenReturn(pCredit);
+
+            mockMvc.perform(
+                            MockMvcRequestBuilders.put("/deal/calculate/"+id)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(asJsonString(dto)))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            assertEquals(StatusEnum.CC_APPROVED, applicationService.findById(id).getStatus());
+            assertTrue(asJsonString(applicationService.findById(id).getCredit()).contains(asJsonString(pCredit.getBody().get())));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            assertNotEquals(RuntimeException.class, e.getClass());
+        }
     }
 
     public static <T> String asJsonString(T t) {
@@ -95,62 +167,5 @@ class DealControllerTest {
             throw new RuntimeException(e);
         }
     }
-
-    private ResponseEntity<Optional<List<LoanOfferDTO>>> prescoreLoan(LoanApplicationRequestDTO dto) {
-        List<LoanOfferDTO> loanOfferDTOList = new ArrayList<>(4);
-
-        LoanOfferDTO insuranceEnabledSalaryClientDto =  prescoreOfferDto(dto, true, true);
-        loanOfferDTOList.add(insuranceEnabledSalaryClientDto);
-
-        LoanOfferDTO insuranceEnabledNotSalaryClientDto =  prescoreOfferDto(dto, true, false);
-        loanOfferDTOList.add(insuranceEnabledNotSalaryClientDto);
-
-        LoanOfferDTO notInsuranceEnabledSalaryClientDto =  prescoreOfferDto(dto, false, true);
-        loanOfferDTOList.add(notInsuranceEnabledSalaryClientDto);
-
-        LoanOfferDTO notInsuranceEnabledNotSalaryClientDto =  prescoreOfferDto(dto, false, false);
-        loanOfferDTOList.add(notInsuranceEnabledNotSalaryClientDto);
-
-        loanOfferDTOList.sort(Comparator.comparing(LoanOfferDTO::getRate));
-        Optional<List<LoanOfferDTO>> op = Optional.of(loanOfferDTOList);
-        return ResponseEntity.of(Optional.of(op));
-    }
-
-    private LoanOfferDTO prescoreOfferDto(LoanApplicationRequestDTO dto, Boolean isInsuranceEnabled, Boolean isSalaryClient) {
-        LoanOfferDTO loanOfferDTO = new LoanOfferDTO(dto, isInsuranceEnabled, isSalaryClient);
-        loanOfferDTO.setRate(calculateRate(isInsuranceEnabled,isSalaryClient));
-        loanOfferDTO.setTotalAmount(calculateTotalAmount(isInsuranceEnabled,dto));
-        return loanOfferDTO;
-    }
-
-    private BigDecimal calculateTotalAmount(Boolean isInsuranceEnabled, LoanApplicationRequestDTO dto) {
-        BigDecimal amount = dto.getAmount();
-        if (isInsuranceEnabled) {
-            return amount.add(baseInsuranceCost);
-        } else {
-            return amount;
-        }
-    }
-
-    private BigDecimal calculateRate(Boolean isInsuranceEnabled, Boolean isSalaryClient) {
-        BigDecimal finalRate = baseLoanRate;
-        int rate = getInsuranceRate(isInsuranceEnabled)+ getSalaryRate(isSalaryClient);
-        BigDecimal rateBD = BigDecimal.valueOf(Math.abs(rate));
-        if (rate < 0) {
-            finalRate = finalRate.subtract(rateBD);
-        } else {
-            finalRate = finalRate.add(rateBD);
-        }
-        return finalRate;
-    }
-
-    private int getInsuranceRate(Boolean b) {
-        return b ? -insuranceRate : insuranceRate;
-    }
-
-    private int getSalaryRate(Boolean b) {
-        return b ? -salaryRate : salaryRate;
-    }
-
 
 }
