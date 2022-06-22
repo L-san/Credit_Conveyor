@@ -64,7 +64,7 @@ public class ScoringDataDTO {
 
     public static ScoringDataDTO from(ApplicationEntity application, ClientEntity client) {
         EmploymentDTO employmentDTO = EmploymentDTO.builder()
-                .employmentStatusEnum(client.getEmployment().getEmploymentStatus())
+                .employmentStatus(client.getEmployment().getEmploymentStatus())
                 .salary(client.getEmployment().getSalary())
                 .position(client.getEmployment().getPosition())
                 .workExperienceTotal(client.getEmployment().getWorkExperienceTotal())

@@ -24,11 +24,11 @@ public class ScoringConditions {
     }
 
     public static boolean isSelfEmployed(ScoringDataDTO dto) {
-        return dto.getEmployment().getEmploymentStatusEnum().equals(EmploymentStatusEnum.SELF_EMPLOYED);
+        return dto.getEmployment().getEmploymentStatus().equals(EmploymentStatusEnum.SELF_EMPLOYED);
     }
 
     public static boolean isBusinessMan(ScoringDataDTO dto) {
-        return dto.getEmployment().getEmploymentStatusEnum().equals(EmploymentStatusEnum.BUSINESSMAN);
+        return dto.getEmployment().getEmploymentStatus().equals(EmploymentStatusEnum.BUSINESSMAN);
     }
 
     public static boolean isTopManager(ScoringDataDTO dto) {
@@ -62,7 +62,7 @@ public class ScoringConditions {
     }
 
     private static boolean isUnemployed(ScoringDataDTO dto) {
-        return dto.getEmployment().getEmploymentStatusEnum().equals(EmploymentStatusEnum.UNEMPLOYED);
+        return dto.getEmployment().getEmploymentStatus().equals(EmploymentStatusEnum.UNEMPLOYED);
     }
 
     private static boolean isAmountLargerThan20Salaries(ScoringDataDTO dto) {

@@ -70,6 +70,7 @@ public class DealController {
     public void calculate(@PathVariable("applicationId") Long applicationId, @RequestBody FinishRegistrationRequestDTO dto) {
         ApplicationEntity application = applicationService.findById(applicationId);
         ClientEntity client = application.getClient();
+        client = clientService.update(client,dto);
         ScoringDataDTO scoringDataDTO = ScoringDataDTO.from(application,client);
         ResponseEntity<Optional<CreditDTO>> resp = conveyorClient.calculation(scoringDataDTO);
         if (resp.getStatusCode().is4xxClientError()) {

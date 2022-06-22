@@ -1,11 +1,8 @@
 package ru.lsan.deal.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
-import org.junit.Before;
+
 import org.junit.FixMethodOrder;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -24,19 +21,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.lsan.deal.database.entity.application.ApplicationEntity;
 import ru.lsan.deal.database.entity.client.ClientEntity;
-import ru.lsan.deal.database.entity.client.PassportEntity;
 import ru.lsan.deal.database.service.application.ApplicationService;
-import ru.lsan.deal.database.service.client.ClientService;
-import ru.lsan.deal.database.service.client.PassportService;
 import ru.lsan.deal.dto.*;
 import ru.lsan.deal.enums.*;
 import ru.lsan.deal.feign.ConveyorClient;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,7 +116,7 @@ class DealControllerTest {
                 .passportIssueDate(LocalDate.now())
                 .passportIssueBranch("this")
                 .employment(EmploymentDTO.builder()
-                        .employmentStatusEnum(EmploymentStatusEnum.EMPLOYED)
+                        .employmentStatus(EmploymentStatusEnum.EMPLOYED)
                         .employerINN("132414")
                         .position(PositionEnum.CEO)
                         .salary(BigDecimal.valueOf(200000))
