@@ -61,7 +61,6 @@ public class DealController {
         log.info("/deal/offer accepted: "+ Tools.asJsonString(dto));
         ApplicationEntity application = applicationService.findById(dto.getApplicationId());
         application.setAppliedOffer(dto);
-        application = applicationService.update(application);
         applicationService.updateStatus(application,StatusEnum.APPROVED);
         log.info("/deal/offer resolved :"+Tools.asJsonString(application));
     }

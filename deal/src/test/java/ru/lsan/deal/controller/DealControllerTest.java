@@ -83,8 +83,7 @@ class DealControllerTest {
         ResponseEntity<Optional<List<LoanOfferDTO>>> pLoan = performApplication();
         LoanOfferDTO loanOffer = pLoan.getBody().get().get(0);
         Long id = loanOffer.getApplicationId();
-        ApplicationEntity application = applicationService.findById(id);
-        assertEquals(StatusEnum.PREAPPROVAL, application.getStatus());
+        assertEquals(StatusEnum.PREAPPROVAL, applicationService.findById(id).getStatus());
     }
 
     @Test
@@ -144,7 +143,6 @@ class DealControllerTest {
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(asJsonString(dto)))
                     .andExpect(MockMvcResultMatchers.status().isOk());
-
             assertEquals(StatusEnum.CC_APPROVED, applicationService.findById(id).getStatus());
             assertTrue(asJsonString(applicationService.findById(id).getCredit()).contains(asJsonString(pCredit.getBody().get())));
         } catch (Exception e) {
